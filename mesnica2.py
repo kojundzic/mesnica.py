@@ -5,7 +5,9 @@ import pandas as pd
 st.set_page_config(page_title="Kojundžić Mesnica", page_icon="🥩", layout="wide")
 
 # --- MODERNI PREMIUM DIZAJN ---
-st.markdown("""
+# Ispravljen parametar unsafe_allow_html=True
+st.markdown(
+    """
     <style>
     .stApp { background-color: #f8f9fa; }
     .product-card {
@@ -23,7 +25,9 @@ st.markdown("""
     [data-testid="stSidebar"] { background-color: #1a1a1a; }
     [data-testid="stSidebar"] * { color: white !important; }
     </style>
-    """, unsafe_allow_index=True)
+    """, 
+    unsafe_allow_html=True
+)
 
 # --- LOGIKA KOŠARICE ---
 if 'cart' not in st.session_state:
@@ -45,7 +49,7 @@ proizvodi = [
 
 # --- IZBORNIK ---
 with st.sidebar:
-    st.markdown("<h2 style='text-align: center;'>🥩 KOJUNDŽIĆ</h2>", unsafe_allow_index=True)
+    st.markdown("<h2 style='text-align: center;'>🥩 KOJUNDŽIĆ</h2>", unsafe_allow_html=True)
     izbor = st.sidebar.radio("NAVIGACIJA", ["🛍️ TRGOVINA", "🛒 KOŠARICA", "ℹ️ O NAMA"])
     st.write("---")
     st.caption("Sisak, Hrvatska | 2026")
@@ -53,19 +57,19 @@ with st.sidebar:
 # --- STRANICA: TRGOVINA ---
 if izbor == "🛍️ TRGOVINA":
     st.title("Domaća Ponuda")
-    st.info("ℹ️ **Napomena o vaganju:** Meso se važe prije pakiranja. Konačna cijena može odstupati +/- 10% ovisno o težini komada.")
+    st.info("ℹ️ **Informacija:** Točan iznos računa znat će se nakon vaganja proizvoda.")
     
     cols = st.columns(2)
     for i, p in enumerate(proizvodi):
         with cols[i % 2]:
-            st.markdown(f'<div class="product-card">', unsafe_allow_index=True)
+            st.markdown('<div class="product-card">', unsafe_allow_html=True)
             st.image(p["slika"], use_container_width=True)
             st.markdown(f"### {p['ime']}")
-            st.markdown(f"<p style='color: #8B0000; font-size: 20px; font-weight: bold;'>{p['cijena']:.2f} € / kg</p>", unsafe_allow_index=True)
+            st.markdown(f"<p style='color: #8B0000; font-size: 20px; font-weight: bold;'>{p['cijena']:.2f} € / kg</p>", unsafe_allow_html=True)
             
             qty = st.number_input(f"Količina (kg)", min_value=0.0, step=0.5, key=f"q_{p['id']}", format="%.1f")
             
-            if st.button(f"DODAJ U KOŠARICU", key=f"b_{p['id']}"):
+            if st.button("DODAJ U KOŠARICU", key=f"b_{p['id']}"):
                 if qty >= 0.5:
                     postoji = False
                     for stavka in st.session_state.cart:
@@ -79,14 +83,14 @@ if izbor == "🛍️ TRGOVINA":
                     st.toast(f"Dodan {p['ime']}!", icon="✅")
                 else:
                     st.error("Minimalna količina je 0.5 kg.")
-            st.markdown('</div>', unsafe_allow_index=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
 # --- STRANICA: KOŠARICA ---
 elif izbor == "🛒 KOŠARICA":
     st.title("Vaša Narudžba")
     
     if not st.session_state.cart:
-        st.info("Vaša košarica je trenutno prazna.")
+        st.info("Vaša košarica je prazna.")
     else:
         if st.button("🗑️ Isprazni košaricu"):
             st.session_state.cart = []
@@ -104,23 +108,21 @@ elif izbor == "🛒 KOŠARICA":
             email_stavke += f"- {s['ime']}: {s['qty']} kg ({s['price']:.2f} EUR)%0D%0A"
         
         st.markdown("---")
-        st.markdown(f"<h2 style='text-align: right;'>Informativni iznos: {ukupno_euro:.2f} €</h2>", unsafe_allow_index=True)
+        st.markdown(f"<h2 style='text-align: right;'>Informativni iznos: {ukupno_euro:.2f} €</h2>", unsafe_allow_html=True)
 
         with st.form("forma_narudzbe"):
-            st.markdown("### 🚚 Podaci za dostavu i kurirsku službu")
+            st.markdown("### 🚚 Podaci za dostavu")
             ime = st.text_input("Ime i Prezime primatelja*")
             mob = st.text_input("Kontakt telefon (npr. +385...)*")
             adr = st.text_input("Ulica i kućni broj*")
             grad_ptt = st.text_input("Poštanski broj i Grad*")
             
-            # LOGIKA ZA INOZEMSTVO
             regija = st.selectbox("Regija dostave", ["Hrvatska", "Inozemstvo (EU)"])
-            
             drzava = "Hrvatska"
             email_kupca = ""
             
             if regija == "Inozemstvo (EU)":
-                st.warning("Pripazite: Za EU dostavu kurirske službe obavezno traže E-mail i Državu.")
+                st.warning("Za EU dostavu kuriri zahtijevaju E-mail i Državu.")
                 drzava = st.text_input("Država*")
                 email_kupca = st.text_input("E-mail adresa kupca*")
             
@@ -129,40 +131,33 @@ elif izbor == "🛒 KOŠARICA":
                 
                 if ime and adr and grad_ptt and mob and uvjet_inozemstvo:
                     MOJ_GMAIL = "tomislavtomi90@gmail.com"
-                    subjekt = f"Nova_Narudzba_{regija}_{ime}"
+                    subjekt = f"Narudzba_{regija}_{ime}"
                     
-                    tijelo = f"NARUDŽBA MESA (2026)%0D%0A-----------------%0D%0A{email_stavke}"
-                    tijelo += f"%0D%0AUKUPNO: cca {ukupno_euro:.2f} EUR"
-                    tijelo += f"%0D%0A-----------------%0D%0APRIMATELJ: {ime}"
-                    tijelo += f"%0D%0AADRESA: {adr}, {grad_ptt}, {drzava}"
-                    tijelo += f"%0D%0AMOBITEL: {mob}"
+                    tijelo = f"NARUDŽBA MESA%0D%0A-----------------%0D%0A{email_stavke}"
+                    tijelo += f"%0D%0AUKUPNO: cca {ukupno_euro:.2f} EUR%0D%0A-----------------%0D%0APRIMATELJ: {ime}"
+                    tijelo += f"%0D%0AADRESA: {adr}, {grad_ptt}, {drzava}%0D%0AMOBITEL: {mob}"
                     if email_kupca:
-                        tijelo += f"%0D%0AEMAIL ZA KURIRA: {email_kupca}"
+                        tijelo += f"%0D%0AEMAIL: {email_kupca}"
                     
                     mail_link = f"mailto:{MOJ_GMAIL}?subject={subjekt}&body={tijelo}"
                     
-                    st.success("✅ Podaci su generirani prema zahtjevima kurirskih službi!")
+                    st.success("✅ Narudžba generirana!")
                     st.markdown(f"""
                         <a href="{mail_link}">
-                            <button style="background-color: #D44638; color: white; padding: 20px; border-radius: 12px; width: 100%; border: none; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                            <button style="background-color: #D44638; color: white; padding: 20px; border-radius: 12px; width: 100%; border: none; font-size: 18px; font-weight: bold; cursor: pointer;">
                                 📧 POŠALJI NARUDŽBU E-MAILOM
                             </button>
                         </a>
-                        """, unsafe_allow_index=True)
+                        """, unsafe_allow_html=True)
                 else:
-                    st.error("Molimo ispunite sva polja označena zvjezdicom (*).")
+                    st.error("Ispunite obavezna polja (*).")
 
 # --- STRANICA: O NAMA ---
 elif izbor == "ℹ️ O NAMA":
     st.title("Mesnica Kojundžić Sisak")
-    st.write("Domaća proizvodnja i tradicionalna prerada mesa iz Siska. Kvaliteta zajamčena generacijama.")
+    st.write("Tradicija i kvaliteta domaće prerade mesa iz Siska.")
     st.divider()
-    st.subheader("📍 Kontakt i Lokacija")
-    st.write("**Adresa:** Trg Josipa Mađerića 1, 44000 Sisak")
-    st.write("**E-mail:** tomislavtomi90@gmail.com")
-    
-    # Karta s točnom lokacijom u Sisku
+    st.subheader("📍 Lokacija")
+    st.write("Trg Josipa Mađerića 1, 44000 Sisak")
     map_data = pd.DataFrame({'lat': [45.4832], 'lon': [16.3761]})
     st.map(map_data)
-    
-    st.info("🛡️ Svi procesi su usklađeni s HACCP certifikatom za 2026. godinu.")
