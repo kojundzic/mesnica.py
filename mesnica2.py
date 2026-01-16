@@ -34,7 +34,7 @@ LANG_MAP = {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FÜR GASTRONOMIE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ÜBER UNS",
         "title_sub": "METZGEREI & FLEISCHVERARBEITUNG | 2026.", "cart_title": "🛒 Warenkorb",
         "cart_empty": "Leer. Artikel mit + hinzufügen", 
-        "note_vaga": "ℹ️ <b>Hinweis:</b> Die Preise sind korrekt, aber der Gesamtbetrag im Warenkorb ist informativ. Der genaue Betrag wird nach dem Wiegen bei Erhalt ermittelt.",
+        "note_vaga": "ℹ️ <b>Hinweis:</b> Die Preise sind korrekt, ali der Gesamtbetrag im Warenkorb ist informativ. Der genaue Betrag wird nach dem Wiegen bei Erhalt ermittelt.",
         "total": "Ungefährer Gesamtbetrag", "form_name": "Vor- und Nachname*", "form_tel": "Telefonnummer*",
         "form_city": "Stadt*", "form_zip": "Postleitzahl*", "form_addr": "Straße & Hausnummer*",
         "btn_order": "✅ BESTELLUNG BESTÄTIGEN", "btn_clear": "🗑️ Leeren", "success": "Eingegangen! Vielen Dank.",
@@ -44,7 +44,7 @@ LANG_MAP = {
 
 st.set_page_config(page_title="Kojundžić | Mesnica i Prerada", page_icon="🥩", layout="wide")
 
-# --- 2. LOGIKA ZA EMAIL (VLASNIKU UVIJEK NA HRVATSKOM) ---
+# --- 2. LOGIKA ZA EMAIL (VLASNIKU NA HRVATSKOM) ---
 def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jezik_korisnika):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
     tijelo = f"""
@@ -67,8 +67,7 @@ def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jez
     UKUPNO (približno): {ukupno} €
     -----------------------------------
     """
-    msg = MIMEText(tijelo)
-    msg['Subject'] = predmet; msg['From'] = MOJ_EMAIL; msg['To'] = MOJ_EMAIL
+    msg = MIMEText(tijelo); msg['Subject'] = predmet; msg['From'] = MOJ_EMAIL; msg['To'] = MOJ_EMAIL
     try:
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         server.starttls(); server.login(MOJ_EMAIL, MOJA_LOZINKA)
@@ -142,7 +141,7 @@ if izbor == T["nav_shop"]:
                 else: st.warning("Popunite polja!")
 
 elif izbor == T["nav_horeca"]:
-    st.title("🏢 Ugostiteljska Ponuda / HORECA")
+    st.title(T["nav_horeca"])
     st.subheader("Profesionalna usluga za restorane i hotele")
     st.markdown("""
     Mesnica i prerada mesa Kojundžić nudi posebne pogodnosti za ugostiteljske objekte:
@@ -155,7 +154,7 @@ elif izbor == T["nav_horeca"]:
     """)
 
 elif izbor == T["nav_haccp"]:
-    st.title("🧼 HACCP Standardi i Sigurnost")
+    st.title(T["nav_haccp"])
     st.success("### ✅ ODOBRENI OBJEKT BR. 2686")
     st.markdown("""
     Naša proizvodnja se odvija pod najstrožim sanitarnim uvjetima u skladu s europskim normama:
@@ -165,7 +164,7 @@ elif izbor == T["nav_haccp"]:
     """)
 
 elif izbor == T["nav_info"]:
-    st.title("ℹ️ O Nama / About Us")
+    st.title(T["nav_info"])
     st.write("### Obiteljska tradicija i kvaliteta")
     st.markdown("""
     Smješteni u srcu Siska, ponosni smo na dugogodišnje iskustvo u obradi i preradi mesa. 
