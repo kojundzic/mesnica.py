@@ -28,7 +28,7 @@ def posalji_email_vlasniku(ime, mob, adr, detalji_narudzbe, ukupno):
     {detalji_narudzbe}
     
     PRIBLIŽNI UKUPNI IZNOS: {ukupno} €
-    (Kupac je obaviješten da će točan iznos znati tek nakon vaganja, odnosno pri primitku paketa)
+    (Kupac je obaviješten o vaganju i trudu oko točnosti količine)
     """
     msg = MIMEText(tijelo)
     msg['Subject'] = predmet
@@ -53,9 +53,9 @@ st.markdown("""
     .brand-sub { color: #333; font-size: 22px; text-align: center; font-weight: 600; margin-top:0px; margin-bottom: 25px; }
     .product-card { background-color: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; margin-bottom:10px; min-height: 180px; }
     .price-tag { color: #8B0000; font-size: 20px; font-weight: bold; }
-    .sidebar-cart { background-color: #ffffff; padding: 20px; border-radius: 15px; border: 2px solid #8B0000; }
+    .sidebar-cart { background-color: #ffffff; padding: 20px; border-radius: 15px; border: 1px solid #ddd; }
     .stButton>button { background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }
-    .vaga-napomena { color: #D32F2F; font-weight: 800; font-size: 15px; text-align: center; margin-bottom: 15px; border: 2px solid #D32F2F; padding: 10px; border-radius: 8px; background-color: #fff5f5; }
+    .vaga-napomena { color: #444; font-weight: 500; font-size: 14px; text-align: center; margin-bottom: 15px; border: 1px solid #ddd; padding: 12px; border-radius: 8px; background-color: #fcfcfc; line-height: 1.5; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -94,8 +94,8 @@ def prikazi_kosaricu(col):
         if not st.session_state.cart:
             st.write("Prazna.")
         else:
-            # NAGLAŠENA NAPOMENA U KOŠARICI
-            st.markdown('<div class="vaga-napomena">⚖️ VAŽNO: Cijene su informativne i približne. Točan iznos znat će se tek nakon vaganja, odnosno kupac će ga znati kada dobije paket!</div>', unsafe_allow_html=True)
+            # PRILAGOĐENA NAPOMENA
+            st.markdown('<div class="vaga-napomena">ℹ️ Cijene su informativne i približne. Točan iznos znat će se tek nakon vaganja, odnosno kupac će ga znati kada dobije paket. Prodavatelj će se truditi maksimalno pridržavati naručenih količina kako bi iznos informativne i prave cijene bio što točniji.</div>', unsafe_allow_html=True)
             
             ukupno = sum(i['price'] for i in st.session_state.cart)
             detalji_za_email = ""
@@ -116,7 +116,7 @@ def prikazi_kosaricu(col):
                     with st.spinner('Slanje narudžbe...'):
                         if posalji_email_vlasniku(ime, mob, adr, detalji_za_email, f"{ukupno:.2f}"):
                             st.session_state.cart = []
-                            st.success("🎉 Zaprimljeno! Narudžba ide u obradu. Točan iznos znat ćete prilikom primitka paketa nakon vaganja.")
+                            st.success("🎉 Zaprimljeno! Prodavatelj će se maksimalno truditi pridržavati naručenih količina. Točan iznos znat ćete pri primitku paketa.")
                             st.balloons()
                         else:
                             st.error("Greška kod slanja. Provjerite vezu ili nas nazovite.")
@@ -159,7 +159,6 @@ if izbor == "🛍️ TRGOVINA":
                         st.session_state.cart.append({"ime": p['ime'], "qty": qty, "price": qty * p['cijena'], "is_komad": False})
                         st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
-        st.info("💡 Napomena: Točan iznos narudžbe bit će poznat nakon vaganja artikala pri pakiranju.")
     prikazi_kosaricu(col_k)
 
 elif izbor == "🏢 ZA UGOSTITELJE":
@@ -190,4 +189,5 @@ elif izbor == "ℹ️ O NAMA":
 
 # --- FOOTER ---
 st.write("---")
-st.caption("© 2026. Mesnica Kojundžić Sisak | Točna cijena artikala utvrđuje se vaganjem pri pakiranju.")
+st.markdown('<p style="text-align: center; color: #777; font-size: 13px;">Cijene su informativne i približne. Prodavatelj će se truditi maksimalno pridržavati naručenih količina kako bi iznos informativne i prave cijene bio što točniji. Točan iznos znat će se nakon vaganja pri primitku paketa.</p>', unsafe_allow_html=True)
+st.caption("© 2026. Mesnica Kojundžić Sisak")
