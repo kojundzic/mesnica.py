@@ -27,7 +27,8 @@ def posalji_email_vlasniku(ime, mob, adr, detalji_narudzbe, ukupno):
     NARUČENI ARTIKLI:
     {detalji_narudzbe}
     
-    UKUPNO ZA NAPLATU: {ukupno} €
+    PRIBLIŽNI UKUPNI IZNOS: {ukupno} €
+    (Kupac je obaviješten da će točan iznos znati tek nakon vaganja, odnosno pri primitku paketa)
     """
     msg = MIMEText(tijelo)
     msg['Subject'] = predmet
@@ -50,23 +51,31 @@ st.markdown("""
     .stApp { background-color: #fdfdfd; }
     .brand-name { color: #8B0000; font-size: 55px; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom:0px; }
     .brand-sub { color: #333; font-size: 22px; text-align: center; font-weight: 600; margin-top:0px; margin-bottom: 25px; }
-    .product-card { background-color: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; margin-bottom:10px; }
+    .product-card { background-color: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; margin-bottom:10px; min-height: 180px; }
     .price-tag { color: #8B0000; font-size: 20px; font-weight: bold; }
-    .sidebar-cart { background-color: #ffffff; padding: 20px; border-radius: 15px; border: 1px solid #ddd; }
+    .sidebar-cart { background-color: #ffffff; padding: 20px; border-radius: 15px; border: 2px solid #8B0000; }
     .stButton>button { background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }
+    .vaga-napomena { color: #D32F2F; font-weight: 800; font-size: 15px; text-align: center; margin-bottom: 15px; border: 2px solid #D32F2F; padding: 10px; border-radius: 8px; background-color: #fff5f5; }
     </style>
     """, unsafe_allow_html=True)
 
 if 'cart' not in st.session_state: st.session_state.cart = []
 
-# --- 4. PODACI ---
+# --- 4. PODACI O PROIZVODIMA ---
 proizvodi = [
-    {"id": 1, "ime": "Dimljena češnjovka", "cijena": 11.50},
-    {"id": 2, "ime": "Dimljeni buncek", "cijena": 8.50},
-    {"id": 3, "ime": "Premium Buđola", "cijena": 19.50},
-    {"id": 4, "ime": "Dimljeni vrat", "cijena": 15.00},
-    {"id": 5, "ime": "Domaća salama", "cijena": 16.00},
-    {"id": 6, "ime": "Dimljeni prsni vršci", "cijena": 9.20},
+    {"id": 1, "ime": "Dimljeni hamburger", "cijena": 12.0, "tip": 0},
+    {"id": 2, "ime": "Dimljeni buncek", "cijena": 8.0, "tip": 1},
+    {"id": 3, "ime": "Dimljeni prsni vršci", "cijena": 9.0, "tip": 1},
+    {"id": 4, "ime": "Slavonska kobasica", "cijena": 16.0, "tip": 0},
+    {"id": 5, "ime": "Domaća salama", "cijena": 25.0, "tip": 0},
+    {"id": 6, "ime": "Dimljene kosti", "cijena": 2.5, "tip": 0},
+    {"id": 7, "ime": "Dimljene nogice, uši, rep - mix", "cijena": 2.5, "tip": 0},
+    {"id": 8, "ime": "Panceta", "cijena": 17.0, "tip": 0},
+    {"id": 9, "ime": "Dimljeni vrat bez kosti", "cijena": 15.0, "tip": 0},
+    {"id": 10, "ime": "Dimljeni kremenadl bez kosti", "cijena": 15.0, "tip": 0},
+    {"id": 11, "ime": "Buđola", "cijena": 20.0, "tip": 0},
+    {"id": 12, "ime": "Čvarci", "cijena": 20.0, "tip": 0},
+    {"id": 13, "ime": "Mast", "cijena": 3.0, "tip": 0},
 ]
 
 ugostitelji_ponuda = [
@@ -74,7 +83,6 @@ ugostitelji_ponuda = [
     {"id": 102, "ime": "Pljeskavice", "cijena": 11.50},
     {"id": 103, "ime": "Šiš-ćevapi", "cijena": 12.50},
     {"id": 201, "ime": "Juneći biftek", "cijena": 35.00},
-    {"id": 202, "ime": "Juneći ramstek s kosti", "cijena": 18.50},
 ]
 
 # --- 5. LOGIKA KOŠARICE ---
@@ -82,17 +90,22 @@ def prikazi_kosaricu(col):
     with col:
         st.markdown('<div class="sidebar-cart">', unsafe_allow_html=True)
         st.subheader("🛒 Vaša Košarica")
+        
         if not st.session_state.cart:
             st.write("Prazna.")
         else:
+            # NAGLAŠENA NAPOMENA U KOŠARICI
+            st.markdown('<div class="vaga-napomena">⚖️ VAŽNO: Cijene su informativne i približne. Točan iznos znat će se tek nakon vaganja, odnosno kupac će ga znati kada dobije paket!</div>', unsafe_allow_html=True)
+            
             ukupno = sum(i['price'] for i in st.session_state.cart)
             detalji_za_email = ""
             for item in st.session_state.cart:
-                st.write(f"**{item['ime']}** - {item['qty']}kg")
-                detalji_za_email += f"- {item['ime']}: {item['qty']}kg\n"
+                jedinica = "kom" if item.get('is_komad') else "kg"
+                st.write(f"**{item['ime']}** - {item['qty']} {jedinica}")
+                detalji_za_email += f"- {item['ime']}: {item['qty']} {jedinica}\n"
             
             st.write("---")
-            st.markdown(f"### Ukupno: {ukupno:.2f} €")
+            st.markdown(f"### Približno: {ukupno:.2f} €")
             
             ime = st.text_input("Ime i Prezime*")
             mob = st.text_input("Mobitel*")
@@ -103,7 +116,7 @@ def prikazi_kosaricu(col):
                     with st.spinner('Slanje narudžbe...'):
                         if posalji_email_vlasniku(ime, mob, adr, detalji_za_email, f"{ukupno:.2f}"):
                             st.session_state.cart = []
-                            st.success("🎉 Zaprimljeno! Javit ćemo Vam se ubrzo.")
+                            st.success("🎉 Zaprimljeno! Narudžba ide u obradu. Točan iznos znat ćete prilikom primitka paketa nakon vaganja.")
                             st.balloons()
                         else:
                             st.error("Greška kod slanja. Provjerite vezu ili nas nazovite.")
@@ -131,11 +144,22 @@ if izbor == "🛍️ TRGOVINA":
         t_cols = st.columns(2)
         for i, p in enumerate(proizvodi):
             with t_cols[i % 2]:
-                st.markdown(f'<div class="product-card"><h3>{p["ime"]}</h3><p class="price-tag">{p["cijena"]:.2f} €/kg</p></div>', unsafe_allow_html=True)
-                qty = st.number_input(f"Kg za {p['ime']}", 0.5, 50.0, 1.0, 0.5, key=f"p_{p['id']}", label_visibility="collapsed")
-                if st.button(f"Dodaj u košaricu", key=f"btn_{p['id']}"):
-                    st.session_state.cart.append({"ime": p['ime'], "qty": qty, "price": qty * p['cijena']})
-                    st.rerun()
+                st.markdown(f'<div class="product-card"><h3>{p["ime"]}</h3>', unsafe_allow_html=True)
+                
+                if p["tip"] == 1:
+                    st.markdown(f'<p class="price-tag">{p["cijena"]:.2f} €/kom*</p>', unsafe_allow_html=True)
+                    qty = st.number_input(f"Broj komada", 1, 20, 1, 1, key=f"p_{p['id']}")
+                    if st.button(f"Dodaj komade", key=f"btn_{p['id']}"):
+                        st.session_state.cart.append({"ime": p['ime'], "qty": qty, "price": qty * p['cijena'], "is_komad": True})
+                        st.rerun()
+                else:
+                    st.markdown(f'<p class="price-tag">{p["cijena"]:.2f} €/kg</p>', unsafe_allow_html=True)
+                    qty = st.number_input(f"Kg", 0.5, 50.0, 1.0, 0.5, key=f"p_{p['id']}")
+                    if st.button(f"Dodaj u košaricu", key=f"btn_{p['id']}"):
+                        st.session_state.cart.append({"ime": p['ime'], "qty": qty, "price": qty * p['cijena'], "is_komad": False})
+                        st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+        st.info("💡 Napomena: Točan iznos narudžbe bit će poznat nakon vaganja artikala pri pakiranju.")
     prikazi_kosaricu(col_k)
 
 elif izbor == "🏢 ZA UGOSTITELJE":
@@ -147,7 +171,7 @@ elif izbor == "🏢 ZA UGOSTITELJE":
             with st.expander(f"🛒 {r['ime']} - {r['cijena']:.2f} €/kg"):
                 qty_u = st.number_input("Odaberite kg", 10.0, 1000.0, 10.0, 2.5, key=f"u_{r['id']}")
                 if st.button(f"DODAJ {r['ime'].upper()}", key=f"ub_{r['id']}"):
-                    st.session_state.cart.append({"ime": r['ime'], "qty": qty_u, "price": qty_u * r['cijena']})
+                    st.session_state.cart.append({"ime": r['ime'], "qty": qty_u, "price": qty_u * r['cijena'], "is_komad": False})
                     st.rerun()
     prikazi_kosaricu(col_k)
 
@@ -166,4 +190,4 @@ elif izbor == "ℹ️ O NAMA":
 
 # --- FOOTER ---
 st.write("---")
-st.caption("© 2026. Mesnica Kojundžić Sisak")
+st.caption("© 2026. Mesnica Kojundžić Sisak | Točna cijena artikala utvrđuje se vaganjem pri pakiranju.")
