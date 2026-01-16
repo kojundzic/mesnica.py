@@ -64,7 +64,7 @@ st.markdown(f"""<style>
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 4. TRGOVINA (STRIKTNA PROVJERA PODATAKA I PRAZNE KOŠARICE) ---
+# --- 4. TRGOVINA (ISPRAVLJENI SVI ERRORI) ---
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
@@ -85,7 +85,8 @@ if choice == T["nav_shop"]:
         {"id": 13, "hr_name": "Mast", "price": 3.0, "type": "kg", "img": "https://images.unsplash.com"}
     ]
 
-    col_main, col_cart = st.columns()
+    # ISPRAVLJENO: st.columns(2) definira izgled (glavno vs košarica)
+    col_main, col_cart = st.columns([2, 1])
 
     with col_main:
         inner_cols = st.columns(2)
@@ -98,6 +99,7 @@ if choice == T["nav_shop"]:
                 </div>""", unsafe_allow_html=True)
                 
                 trenutna = st.session_state.cart.get(p['id'], 0.0)
+                # ISPRAVLJENO: st.columns(3) za kontrole artikla
                 c1, c2, c3 = st.columns(3)
                 
                 if c1.button("−", key=f"min_{p['id']}"):
@@ -147,16 +149,15 @@ if choice == T["nav_shop"]:
                     f_ptt = st.text_input(T["form_zip"])
                     f_adr = st.text_input(T["form_addr"])
                     
-                    poslano = st.form_submit_button(T["btn_order"])
-                    if poslano:
-                        # STRIKTNA PROVJERA SVIH POLJA
+                    if st.form_submit_button(T["btn_order"]):
+                        # STRIKTNA PROVJERA
                         if f_ime and f_tel and f_cty and f_grad and f_ptt and f_adr:
                             if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, detalji_mail, suma, "HR 🇭🇷", f_cty, f_ptt):
                                 st.success(T["success"]); st.session_state.cart = {}; st.balloons(); st.rerun()
                             else: 
-                                st.error("Greška pri slanju. Provjerite internetsku vezu.")
+                                st.error("Greška pri slanju.")
                         else: 
-                            st.error("NARUDŽBA ODBIJENA: Molimo popunite sva polja označena sa (*) kako bismo znali kamo dostaviti paket.")
+                            st.error("Narudžba nije poslana. Molimo ispunite SVA polja za dostavu.")
 
 # --- 5. OSTALE RUBRIKE (ZAKLJUČANO) ---
 elif choice == T["nav_horeca"]:
