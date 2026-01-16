@@ -18,7 +18,7 @@ LANG_MAP = {
         "total": "Približno", "form_name": "Ime i Prezime*", "form_tel": "Broj telefona*",
         "form_city": "Grad*", "form_zip": "Poštanski broj*", "form_addr": "Ulica i kućni broj*",
         "btn_order": "✅ POTVRDI NARUDŽBU", "btn_clear": "🗑️ Isprazni", "success": "Zaprimljeno! Hvala vam.",
-        "unit_kg": "kg", "unit_pc": "kom"
+        "unit_kg": "kg", "unit_pc": "kom",
     },
     "EN 🇬🇧": {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FOR RESTAURANTS", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ABOUT US",
@@ -34,7 +34,7 @@ LANG_MAP = {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FÜR GASTRONOMIE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ÜBER UNS",
         "title_sub": "METZGEREI & FLEISCHVERARBEITUNG | 2026.", "cart_title": "🛒 Warenkorb",
         "cart_empty": "Leer. Artikel mit + hinzufügen", 
-        "note_vaga": "ℹ️ <b>Hinweis:</b> Die Preise sind korrekt, aber der Gesamtbetrag im Warenkorb ist informativ. Der genaue Betrag wird nach dem Wiegen bei Erhalt ermittelt.",
+        "note_vaga": "ℹ️ <b>Hinweis:</b> Die Preise sind informativ. Der genaue Betrag wird nach dem Wiegen bei Erhalt ermittelt.",
         "total": "Ungefährer Gesamtbetrag", "form_name": "Vor- und Nachname*", "form_tel": "Telefonnummer*",
         "form_city": "Stadt*", "form_zip": "Postleitzahl*", "form_addr": "Straße & Hausnummer*",
         "btn_order": "✅ BESTELLUNG BESTÄTIGEN", "btn_clear": "🗑️ Leeren", "success": "Eingegangen! Vielen Dank.",
@@ -74,7 +74,7 @@ def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jez
     except: return False
 
 # --- 3. DIZAJN I ODABIR JEZIKA ---
-col_l, col_lang = st.columns([3, 1])
+col_l, col_lang = st.columns()
 with col_lang:
     izabrani_jezik = st.selectbox("Jezik / Language", list(LANG_MAP.keys()))
     T = LANG_MAP[izabrani_jezik]
@@ -91,7 +91,7 @@ st.markdown("""<style>
 
 if 'cart_dict' not in st.session_state: st.session_state.cart_dict = {}
 
-# --- 4. PROIZVODI ---
+# --- 4. PODACI O PROIZVODIMA ---
 proizvodi = [
     {"id": 1, "hr_ime": "Dimljeni hamburger", "ime": {"HR 🇭🇷": "Dimljeni hamburger", "EN 🇬🇧": "Smoked Bacon", "DE 🇩🇪": "Geräucherter Speck"}, "cijena": 12.0, "tip": 0},
     {"id": 2, "hr_ime": "Dimljeni buncek", "ime": {"HR 🇭🇷": "Dimljeni buncek", "EN 🇬🇧": "Smoked Pork Hock", "DE 🇩🇪": "Geräucherte Stelze"}, "cijena": 8.0, "tip": 1},
@@ -108,7 +108,7 @@ proizvodi = [
     {"id": 13, "hr_ime": "Mast", "ime": {"HR 🇭🇷": "Mast", "EN 🇬🇧": "Lard", "DE 🇩🇪": "Schweineschmalz"}, "cijena": 3.0, "tip": 0},
 ]
 
-# --- 5. NAVIGACIJA ---
+# --- 5. NAVIGACIJA I STRANICE ---
 izbor = st.sidebar.radio("NAVIGACIJA", [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]])
 
 if izbor == T["nav_shop"]:
@@ -151,28 +151,29 @@ if izbor == T["nav_shop"]:
 elif izbor == T["nav_horeca"]:
     st.title("🏢 Ugostiteljska Ponuda / HORECA")
     st.write("### Profesionalna usluga za restorane i hotele")
-    st.write("""
+    st.markdown("""
     Mesnica i prerada mesa Kojundžić nudi posebne pogodnosti za ugostiteljske objekte:
-    - **Uslužna proizvodnja:** Izrada suhomesnatih proizvoda prema vašim specifičnim recepturama.
-    - **Veleprodajne cijene:** Konkurentne cijene prilagođene redovnim isporukama.
-    - **Kvaliteta i kontinuitet:** Strogo kontrolirano domaće porijeklo i stabilna kvaliteta kroz cijelu godinu.
+    *   **Uslužna proizvodnja:** Izrada suhomesnatih proizvoda prema vašim specifičnim recepturama.
+    *   **Veleprodajne cijene:** Konkurentne cijene prilagođene redovnim isporukama.
+    *   **Kvaliteta i kontinuitet:** Strogo kontrolirano domaće porijeklo i stabilna kvaliteta kroz cijelu godinu.
+    *   **Dostava:** Za veće količine nudimo mogućnost dostave vlastitim, specijaliziranim vozilima.
     """)
     st.info("Za sve upite i dogovore oko suradnje kontaktirajte nas direktno na: **tomislavtomi90@gmail.com**")
 
 elif izbor == T["nav_haccp"]:
     st.title("🧼 HACCP Standardi i Sigurnost")
     st.success("### ✅ ODOBRENI OBJEKT BR. 2686")
-    st.write("""
+    st.markdown("""
     Naša proizvodnja se odvija pod najstrožim sanitarnim uvjetima u skladu s europskim normama:
-    1. **Sljedivost:** Svaki komad mesa ima jasno vidljivo porijeklo i kontroliran put do vašeg stola.
-    2. **Sigurnost:** Sustav HACCP osigurava da se svaki korak proizvodnje prati i dokumentira.
-    3. **Tradicija i Higijena:** Spajamo starinske načine dimljenja s najsuvremenijim higijenskim standardima.
+    *   **Sljedivost:** Svaki komad mesa ima jasno vidljivo porijeklo i kontroliran put do vašeg stola.
+    *   **Sigurnost:** Sustav HACCP osigurava da se svaki korak proizvodnje prati i dokumentira.
+    *   **Tradicija i Higijena:** Spajamo starinske načine dimljenja s najsuvremenijim higijenskim standardima.
     """)
 
 elif izbor == T["nav_info"]:
     st.title("ℹ️ O Nama / About Us")
     st.write("### Obiteljska tradicija i kvaliteta")
-    st.write("""
+    st.markdown("""
     Smješteni u srcu Siska, ponosni smo na dugogodišnje iskustvo u obradi i preradi mesa. 
     Sve naše proizvode radimo s posebnom pažnjom, koristeći tradicionalne metode soljenja i dimljenja na drvima bukve i graba.
     """)
