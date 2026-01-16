@@ -34,7 +34,7 @@ LANG_MAP = {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FÜR GASTRONOMIE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ÜBER UNS",
         "title_sub": "METZGEREI & FLEISCHVERARBEITUNG | 2026.", "cart_title": "🛒 Warenkorb",
         "cart_empty": "Leer. Artikel mit + hinzufügen", 
-        "note_vaga": "ℹ️ <b>Hinweis:</b> Die Preise sind korrekt, ali der Gesamtbetrag im Warenkorb ist informativ. Der genaue Betrag wird nach dem Wiegen bei Erhalt ermittelt.",
+        "note_vaga": "ℹ️ <b>Hinweis:</b> Die Preise sind korrekt, aber der Gesamtbetrag im Warenkorb ist informativ. Der genaue Betrag wird nach dem Wiegen bei Erhalt ermittelt.",
         "total": "Ungefährer Gesamtbetrag", "form_name": "Vor- und Nachname*", "form_tel": "Telefonnummer*",
         "form_city": "Stadt*", "form_zip": "Postleitzahl*", "form_addr": "Straße & Hausnummer*",
         "btn_order": "✅ BESTELLUNG BESTÄTIGEN", "btn_clear": "🗑️ Leeren", "success": "Eingegangen! Vielen Dank.",
@@ -44,7 +44,7 @@ LANG_MAP = {
 
 st.set_page_config(page_title="Kojundžić | Mesnica i Prerada", page_icon="🥩", layout="wide")
 
-# --- 2. LOGIKA ZA EMAIL ---
+# --- 2. LOGIKA ZA EMAIL (VLASNIKU NA HRVATSKOM) ---
 def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jezik_korisnika):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
     tijelo = f"""
@@ -90,7 +90,7 @@ st.markdown("""
 
 if 'cart' not in st.session_state: st.session_state.cart = {}
 
-# --- 4. PROIZVODI ---
+# --- 4. PROIZVODI (Ovdje radite izmjene za Trgovinu) ---
 proizvodi = [
     {"id": 1, "hr_name": "Dimljeni hamburger", "name": {"HR 🇭🇷": "Dimljeni hamburger", "EN 🇬🇧": "Smoked Bacon", "DE 🇩🇪": "Geräucherter Speck"}, "price": 12.0, "type": "kg"},
     {"id": 2, "hr_name": "Dimljeni buncek", "name": {"HR 🇭🇷": "Dimljeni buncek", "EN 🇬🇧": "Smoked Pork Hock", "DE 🇩🇪": "Geräucherte Stelze"}, "price": 8.0, "type": "kom"},
@@ -105,42 +105,9 @@ proizvodi = [
 # --- 5. NAVIGACIJA ---
 izbor = st.sidebar.radio("IZBORNIK", [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]])
 
-if izbor == T["nav_shop"]:
-    st.markdown('<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
-    st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
-    col_p, col_c = st.columns([2, 1.2])
-    with col_p:
-        p_cols = st.columns(2)
-        for i, p in enumerate(proizvodi):
-            with p_cols[i % 2]:
-                st.markdown(f'<div class="product-card"><b>{p["name"][izabrani_jezik]}</b><br>{p["price"]:.2f} € / {p["type"]}</div>', unsafe_allow_html=True)
-                step = 1.0 if p["type"] == "kom" else 0.5
-                q_key = f"qty_{p['id']}"
-                curr = st.session_state.cart.get(p["hr_name"], {"qty": 0.0})["qty"]
-                qty = st.number_input(f"K {p['id']}", min_value=0.0, step=step, value=float(curr), key=q_key, label_visibility="collapsed")
-                if p["type"] == "kg" and qty == 0.5: qty = 1.0; st.session_state[q_key] = 1.0; st.rerun()
-                st.session_state.cart[p["hr_name"]] = {"qty": qty, "price": qty * p["price"], "vidi": p["name"][izabrani_jezik], "type": p["type"]}
+# ======================== ZAKLJUČANE RUBRIKE (HORECA, HACCP, O NAMA) ========================
 
-    with col_c:
-        st.subheader(T["cart_title"])
-        aktivni = {k: v for k, v in st.session_state.cart.items() if v['qty'] > 0}
-        if not aktivni: st.info(T["cart_empty"])
-        else:
-            st.markdown(f'<div style="background:#f9f9f9; padding:10px; border-radius:8px; font-size:13px; text-align:center; border:1px solid #ddd; margin-bottom:15px;">{T["note_vaga"]}</div>', unsafe_allow_html=True)
-            total = 0; detalji_hr = ""
-            for hr_ime, pod in aktivni.items():
-                st.write(f"**{pod['vidi']}**: {pod['qty']} {pod['type']} ({pod['price']:.2f} €)")
-                total += pod['price']; detalji_hr += f"- {hr_ime}: {pod['qty']} {pod['type']}\n"
-            st.write("---"); st.markdown(f"### {T['total']}: {total:.2f} €")
-            ime = st.text_input(T["form_name"]); tel = st.text_input(T["form_tel"]); grad = st.text_input(T["form_city"]); ptt = st.text_input(T["form_zip"]); adr = st.text_input(T["form_addr"])
-            if st.button(T["btn_order"]):
-                if ime and tel and grad and adr:
-                    if posalji_email_vlasniku(ime, tel, grad, ptt, adr, detalji_hr, f"{total:.2f}", izabrani_jezik):
-                        st.success(T["success"]); st.session_state.cart = {}; st.balloons(); st.rerun()
-                else: st.warning("Popunite polja!")
-
-elif izbor == T["nav_horeca"]:
-    # SLIKA: Profesionalno rashladno vozilo (Direct link)
+if izbor == T["nav_horeca"]:
     st.image("https://cdn.pixabay.com", use_container_width=True)
     st.title(T["nav_horeca"])
     st.subheader("Profesionalna usluga za restorane i hotele")
@@ -155,7 +122,6 @@ elif izbor == T["nav_horeca"]:
     """)
 
 elif izbor == T["nav_haccp"]:
-    # SLIKA: Higijena i kontrola (Direct link)
     st.image("https://cdn.pixabay.com", use_container_width=True)
     st.title(T["nav_haccp"])
     st.success("### ✅ ODOBRENI OBJEKT BR. 2686")
@@ -167,7 +133,6 @@ elif izbor == T["nav_haccp"]:
     """)
 
 elif izbor == T["nav_info"]:
-    # SLIKA: Pašnjak i stoka (Direct link)
     st.image("https://cdn.pixabay.com", use_container_width=True)
     st.title(T["nav_info"])
     st.write("### Obiteljska tradicija i kvaliteta")
@@ -189,6 +154,47 @@ elif izbor == T["nav_info"]:
     📧 **Kontakt:** tomislavtomi90@gmail.com  
     ⏰ **Godina:** U 2026. nastavljamo tradiciju vrhunskog okusa.
     """)
+
+# ======================== OTVORENA RUBRIKA (TRGOVINA) ========================
+
+elif izbor == T["nav_shop"]:
+    st.markdown('<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
+    col_p, col_c = st.columns([2, 1.2])
+    
+    with col_p:
+        p_cols = st.columns(2)
+        for i, p in enumerate(proizvodi):
+            with p_cols[i % 2]:
+                st.markdown(f'<div class="product-card"><b>{p["name"][izabrani_jezik]}</b><br>{p["price"]:.2f} € / {p["type"]}</div>', unsafe_allow_html=True)
+                step = 1.0 if p["type"] == "kom" else 0.5
+                q_key = f"qty_{p['id']}"
+                curr = st.session_state.cart.get(p["hr_name"], {"qty": 0.0})["qty"]
+                qty = st.number_input(f"K {p['id']}", min_value=0.0, step=step, value=float(curr), key=q_key, label_visibility="collapsed")
+                
+                # Logika skoka na 1.0 kg
+                if p["type"] == "kg" and qty == 0.5: 
+                    qty = 1.0; st.session_state[q_key] = 1.0; st.rerun()
+                
+                st.session_state.cart[p["hr_name"]] = {"qty": qty, "price": qty * p["price"], "vidi": p["name"][izabrani_jezik], "type": p["type"]}
+
+    with col_c:
+        st.subheader(T["cart_title"])
+        aktivni = {k: v for k, v in st.session_state.cart.items() if v['qty'] > 0}
+        if not aktivni: st.info(T["cart_empty"])
+        else:
+            st.markdown(f'<div style="background:#f9f9f9; padding:10px; border-radius:8px; font-size:13px; text-align:center; border:1px solid #ddd; margin-bottom:15px;">{T["note_vaga"]}</div>', unsafe_allow_html=True)
+            total = 0; detalji_hr = ""
+            for hr_ime, pod in aktivni.items():
+                st.write(f"**{pod['vidi']}**: {pod['qty']} {pod['type']} ({pod['price']:.2f} €)")
+                total += pod['price']; detalji_hr += f"- {hr_ime}: {pod['qty']} {pod['type']}\n"
+            st.write("---"); st.markdown(f"### {T['total']}: {total:.2f} €")
+            ime = st.text_input(T["form_name"]); tel = st.text_input(T["form_tel"]); grad = st.text_input(T["form_city"]); ptt = st.text_input(T["form_zip"]); adr = st.text_input(T["form_addr"])
+            if st.button(T["btn_order"]):
+                if ime and tel and grad and adr:
+                    if posalji_email_vlasniku(ime, tel, grad, ptt, adr, detalji_hr, f"{total:.2f}", izabrani_jezik):
+                        st.success(T["success"]); st.session_state.cart = {}; st.balloons(); st.rerun()
+                else: st.warning("Popunite sva polja!")
 
 st.sidebar.markdown("---")
 st.sidebar.caption("© 2026 Kojundžić Mesnica i Prerada")
