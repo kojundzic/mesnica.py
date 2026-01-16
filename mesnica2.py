@@ -3,7 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 
-# --- 1. KONFIGURACIJA I KOMPLETNI PRIJEVODI ---
+# --- 1. KONFIGURACIJA I KOMPLETNI PRIJEVODI (ZAKLJUČANO) ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
@@ -62,8 +62,8 @@ LANG_MAP = {
 
 st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 
-# --- 2. LOGIKA ZA EMAIL ---
-def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jezik_korisnika):
+# --- 2. LOGIKA ZA EMAIL (ZAKLJUČANO) ---
+def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_korisnika):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
     tijelo = f"Kupac: {ime}\nTel: {telefon}\nGrad: {grad}\nAdresa: {adr}\n\nJezik kupca: {jezik_korisnika}\n\nArtikli:\n{detalji_hr}\n\nUkupno: {ukupno} €"
     msg = MIMEText(tijelo); msg['Subject'] = predmet; msg['From'] = MOJ_EMAIL; msg['To'] = MOJ_EMAIL
@@ -74,7 +74,7 @@ def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jez
         return True
     except: return False
 
-# --- 3. JEZIK I DIZAJN ---
+# --- 3. DIZAJN (ZAKLJUČANO) ---
 izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
 
@@ -83,75 +83,102 @@ st.markdown(f"""<style>
     .brand-sub {{ color: #333; font-size: 18px; text-align: center; font-weight: 600; margin-bottom: 25px; }}
     .product-card {{ background: white; border-radius: 12px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: 0.3s; }}
     .product-img {{ border-radius: 8px; width: 100%; height: 180px; object-fit: cover; margin-bottom: 10px; }}
-    .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }}
+    .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; width: 100%; }}
 </style>""", unsafe_allow_html=True)
 
-# --- 4. PROIZVODI ---
+# --- 4. PROIZVODI (ZAKLJUČANO) ---
 proizvodi = [
     {"id": 1, "hr_name": "Dimljeni hamburger", "name": {"HR 🇭🇷": "Dimljeni hamburger", "EN 🇬🇧": "Smoked Bacon", "DE 🇩🇪": "Geräucherter Speck"}, "price": 12.0, "type": "kg", "img": "https://images.unsplash.com"},
-    {"id": 2, "hr_name": "Dimljeni buncek", "name": {"HR 🇭🇷": "Dimljeni buncek", "EN 🇬🇧": "Smoked Pork Hock", "DE 🇩🇪": "Geräucherte Stelze"}, "price": 8.0, "type": "kom", "img": "https://images.unsplash.com"},
+    {"id": 2, "hr_name": "Dimljeni buncek", "name": {"HR 🇭🇷": "Dimljeni buncek", "EN 🇬🇧": "Smoked Pork Hock", "DE 🇩🇪": "Geräucherte Stelze"}, "price": 8.0, "type": "pc", "img": "https://images.unsplash.com"},
     {"id": 4, "hr_name": "Slavonska kobasica", "name": {"HR 🇭🇷": "Slavonska kobasica", "EN 🇬🇧": "Slavonian Sausage", "DE 🇩🇪": "Slawonische Wurst"}, "price": 16.0, "type": "kg", "img": "https://images.unsplash.com"},
     {"id": 12, "hr_name": "Čvarci", "name": {"HR 🇭🇷": "Čvarci", "EN 🇬🇧": "Pork Cracklings", "DE 🇩🇪": "Grammeln"}, "price": 20.0, "type": "kg", "img": "https://images.unsplash.com"}
 ]
 
-# --- 5. NAVIGACIJA ---
-izbor = st.sidebar.radio("IZBORNIK", [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]])
+# Inicijalizacija košarice
+if "cart" not in st.session_state:
+    st.session_state.cart = {}
 
-if izbor == T["nav_shop"]:
-    # NASLOVNA SLIKA TRGOVINE: Dimljeno meso s paprom i biljem
-    st.image("https://images.unsplash.com", use_container_width=True)
-    st.markdown('<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
+# --- 5. NAVIGACIJA (TABS) ---
+tab_shop, tab_horeca, tab_haccp, tab_info = st.tabs([
+    T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]
+])
+
+# --- TRGOVINA (RUBRIKA ZA RAD) ---
+with tab_shop:
+    st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
     
-    col_p, col_c = st.columns([2, 1.2])
-    narudzba = {}
-    with col_p:
-        p_cols = st.columns(2)
-        for i, p in enumerate(proizvodi):
-            vidi_ime = p["name"][izabrani_jezik]
-            with p_cols[i % 2]:
-                st.markdown(f'<div class="product-card"><img src="{p["img"]}" class="product-img"><b>{vidi_ime}</b><br>{p["price"]:.2f} € / {T["unit_pc"] if p["type"]=="kom" else T["unit_kg"]}</div>', unsafe_allow_html=True)
-                step = 1.0 if p["type"] == "kom" else 0.5
-                qty = st.number_input(f"Q_{p['id']}", min_value=0.0, step=step, key=f"q_{p['id']}", label_visibility="collapsed")
-                if p["type"] == "kg" and qty == 0.5: qty = 1.0
-                if qty > 0: narudzba[p["hr_name"]] = {"qty": qty, "price": qty * p["price"], "vidi": vidi_ime, "unit": T["unit_pc"] if p["type"]=="kom" else T["unit_kg"]}
+    cols = st.columns(2)
+    for i, p in enumerate(proizvodi):
+        with cols[i % 2]:
+            st.markdown(f"""
+            <div class="product-card">
+                <img src="{p['img']}" class="product-img">
+                <h3 style="margin:0;">{p['name'][izabrani_jezik]}</h3>
+                <p style="font-size: 20px; color: #8B0000; font-weight: bold;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button(f"➕ {p['name'][izabrani_jezik]}", key=f"add_{p['id']}"):
+                st.session_state.cart[p['id']] = st.session_state.cart.get(p['id'], 0) + 1
+                st.rerun()
 
-    with col_c:
-        st.subheader(T["cart_title"])
-        if not narudzba: st.info(T["cart_empty"])
-        else:
-            st.markdown(f'<div style="background:#f9f9f9; padding:10px; border-radius:8px; font-size:13px; border:1px solid #ddd; margin-bottom:15px;">{T["note_vaga"]}</div>', unsafe_allow_html=True)
-            total = 0; detalji_hr = ""
-            for hr_ime, pod in narudzba.items():
-                st.write(f"**{pod['vidi']}**: {pod['qty']} {pod['unit']} ({pod['price']:.2f} €)")
-                total += pod['price']; detalji_hr += f"- {hr_ime}: {pod['qty']} {pod['unit']}\n"
-            st.write("---"); st.markdown(f"### {T['total']}: {total:.2f} €")
-            ime = st.text_input(T["form_name"]); tel = st.text_input(T["form_tel"]); grad = st.text_input(T["form_city"]); adr = st.text_input(T["form_addr"])
-            if st.button(T["btn_order"]):
-                if ime and tel and grad and adr:
-                    if posalji_email_vlasniku(ime, tel, grad, "", adr, detalji_hr, f"{total:.2f}", izabrani_jezik):
-                        st.success(T["success"]); st.balloons()
-                else: st.warning("!")
+    # KOŠARICA U SIDEBARU
+    st.sidebar.markdown(f"### {T['cart_title']}")
+    ukupna_cijena = 0.0
+    detalji_hr = ""
 
-# --- ZAKLJUČANE RUBRIKE ---
-elif izbor == T["nav_horeca"]:
-    st.image("https://images.unsplash.com", use_container_width=True)
-    st.title(T["nav_horeca"])
-    st.subheader(T["horeca_title"])
+    if not st.session_state.cart:
+        st.sidebar.info(T["cart_empty"])
+    else:
+        for p_id, kolicina in list(st.session_state.cart.items()):
+            p = next(item for item in proizvodi if item["id"] == p_id)
+            subtotal = p["price"] * kolicina
+            ukupna_cijena += subtotal
+            
+            st.sidebar.markdown(f"**{p['name'][izabrani_jezik]}**")
+            col1, col2 = st.sidebar.columns([1,1])
+            nova_kol = col1.number_input(f"{T['unit_'+p['type']]}", min_value=0, value=kolicina, key=f"edit_{p_id}")
+            if nova_kol != kolicina:
+                if nova_kol == 0: del st.session_state.cart[p_id]
+                else: st.session_state.cart[p_id] = nova_kol
+                st.rerun()
+            
+            detalji_hr += f"- {p['hr_name']}: {kolicina} {p['type']}\n"
+
+        st.sidebar.markdown("---")
+        st.sidebar.markdown(f"{T['note_vaga']}", unsafe_allow_html=True)
+        st.sidebar.subheader(f"{T['total']}: {ukupna_cijena:.2f} €")
+
+        with st.sidebar.expander(T["btn_order"]):
+            with st.form("order_form"):
+                ime = st.text_input(T["form_name"])
+                tel = st.text_input(T["form_tel"])
+                grad = st.text_input(T["form_city"])
+                adr = st.text_input(T["form_addr"])
+                potvrdi = st.form_submit_button(T["btn_order"])
+                
+                if potvrdi:
+                    if ime and tel and grad and adr:
+                        if posalji_email_vlasniku(ime, tel, grad, adr, detalji_hr, ukupna_cijena, izabrani_jezik):
+                            st.success(T["success"])
+                            st.session_state.cart = {}
+                            st.balloons()
+                        else:
+                            st.error("Greška pri slanju.")
+                    else:
+                        st.warning("Popunite sva polja.")
+
+# --- 6. OSTALI TABOVI (ZAKLJUČANO) ---
+with tab_horeca:
+    st.header(T["horeca_title"])
     st.markdown(T["horeca_text"])
-    st.info(f"Email: tomislavtomi90@gmail.com")
 
-elif izbor == T["nav_haccp"]:
-    st.image("https://images.unsplash.com", use_container_width=True)
-    st.title(T["nav_haccp"])
-    st.success("### ✅ ODOBRENI OBJEKT BR. 2686")
-    st.markdown(T["haccp_text"])
+with tab_haccp:
+    st.header(T["haccp_title"])
+    st.info(T["haccp_text"])
 
-elif izbor == T["nav_info"]:
-    st.image("https://images.unsplash.com", use_container_width=True)
-    st.title(T["nav_info"])
-    st.subheader(T["info_title"])
-    st.markdown(T["info_text"])
-    st.markdown(f"--- \n📍 **Sisak, Trg Josipa Mađerića 1** \n📧 tomislavtomi90@gmail.com")
-
-st.sidebar.caption("© 2026 Kojundžić Mesnica i Prerada")
+with tab_info:
+    st.header(T["info_title"])
+    st.write(T["info_text"])
+    st.map(data={'lat': [45.485], 'lon': [16.373]})
