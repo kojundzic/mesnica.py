@@ -106,7 +106,7 @@ def prikazi_kosaricu(col):
                             st.success("🎉 Zaprimljeno! Javit ćemo Vam se ubrzo.")
                             st.balloons()
                         else:
-                            st.error("Greška kod slanja. Provjerite internetsku vezu ili nas nazovite.")
+                            st.error("Greška kod slanja. Provjerite vezu ili nas nazovite.")
                 else:
                     st.warning("Molimo popunite sva polja!")
             
@@ -160,7 +160,7 @@ elif izbor == "ℹ️ O NAMA":
     st.title("ℹ️ Kontakt i Lokacija")
     st.write("📍 **Adresa:** Trg Josipa Mađerića 1, Sisak")
     st.write("📞 **Mobitel:** +385 91 XXX XXXX")
-    st.write("📧 **Email:** info@kojundzic-meso.hr")
+    st.write(f"📧 **Email:** {MOJ_EMAIL}")
     st.write("---")
     st.info("Obiteljska tradicija prerade mesa na domaći način.")
 
