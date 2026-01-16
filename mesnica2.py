@@ -14,17 +14,24 @@ SMTP_PORT = 587
 st.set_page_config(page_title="Kojundžić | Mesnica i Prerada mesa", page_icon="🥩", layout="wide")
 
 # --- 2. LOGIKA ZA TIHO SLANJE NARUDŽBE VLASNIKU ---
-def posalji_email_vlasniku(ime, mob, adr, detalji_narudzbe, ukupno):
+def posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_narudzbe, ukupno):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
     tijelo = f"""
     Stigla je nova narudžba putem weba!
     
-    KUPAC: {ime}
-    MOBITEL: {mob}
-    ADRESA: {adr}
+    PODACI O KUPCU:
+    -----------------------------------
+    Ime i Prezime: {ime}
+    Telefon: {telefon}
+    Država: {drzava}
+    Grad: {grad}
+    Poštanski broj (PTT): {ptt}
+    Adresa: {adr}
+    
     DATUM: {datetime.now().strftime('%d.%m.%2026. %H:%M')}
     
     NARUČENI ARTIKLI:
+    -----------------------------------
     {detalji_narudzbe}
     
     PRIBLIŽNI UKUPNI IZNOS: {ukupno} €
@@ -53,7 +60,7 @@ st.markdown("""
     .brand-sub { color: #333; font-size: 22px; text-align: center; font-weight: 600; margin-top:0px; margin-bottom: 25px; }
     .product-card { background-color: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; margin-bottom:10px; min-height: 180px; }
     .price-tag { color: #8B0000; font-size: 20px; font-weight: bold; }
-    .sidebar-cart { background-color: #ffffff; padding: 20px; border-radius: 15px; border: 1px solid #ddd; }
+    .sidebar-cart { background-color: #ffffff; padding: 25px; border-radius: 15px; border: 1px solid #ddd; }
     .stButton>button { background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }
     .vaga-napomena { color: #444; font-weight: 500; font-size: 14px; text-align: center; margin-bottom: 15px; border: 1px solid #ddd; padding: 12px; border-radius: 8px; background-color: #fcfcfc; line-height: 1.5; }
     </style>
@@ -94,8 +101,7 @@ def prikazi_kosaricu(col):
         if not st.session_state.cart:
             st.write("Prazna.")
         else:
-            # PRILAGOĐENA NAPOMENA
-            st.markdown('<div class="vaga-napomena">ℹ️ Cijene su informativne i približne. Točan iznos znat će se tek nakon vaganja, odnosno kupac će ga znati kada dobije paket. Prodavatelj će se truditi maksimalno pridržavati naručenih količina kako bi iznos informativne i prave cijene bio što točniji.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="vaga-napomena">ℹ️ Cijene su informativne i približne. Točan iznos znat će se nakon vaganja, odnosno pri primitku paketa. Prodavatelj će se truditi maksimalno pridržavati naručenih količina kako bi iznos informativne i prave cijene bio što točniji.</div>', unsafe_allow_html=True)
             
             ukupno = sum(i['price'] for i in st.session_state.cart)
             detalji_za_email = ""
@@ -107,21 +113,36 @@ def prikazi_kosaricu(col):
             st.write("---")
             st.markdown(f"### Približno: {ukupno:.2f} €")
             
+            # --- UREDNIJE RUBRIKE ZA PODATKE ---
+            st.markdown("#### Podaci za dostavu:")
             ime = st.text_input("Ime i Prezime*")
-            mob = st.text_input("Mobitel*")
-            adr = st.text_input("Adresa dostave*")
+            telefon = st.text_input("Broj telefona (za kurirsku službu)*")
+            
+            col_geo1, col_geo2 = st.columns(2)
+            with col_geo1:
+                drzava = st.text_input("Država*", value="Hrvatska")
+            with col_geo2:
+                grad = st.text_input("Grad*")
+                
+            col_geo3, col_geo4 = st.columns([1, 2])
+            with col_geo3:
+                ptt = st.text_input("Poštanski broj*")
+            with col_geo4:
+                adr = st.text_input("Ulica i kućni broj*")
+            
+            st.write("") # Razmak
             
             if st.button("✅ POTVRDI NARUDŽBU"):
-                if ime and mob and adr:
+                if ime and telefon and grad and ptt and adr:
                     with st.spinner('Slanje narudžbe...'):
-                        if posalji_email_vlasniku(ime, mob, adr, detalji_za_email, f"{ukupno:.2f}"):
+                        if posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_za_email, f"{ukupno:.2f}"):
                             st.session_state.cart = []
                             st.success("🎉 Zaprimljeno! Prodavatelj će se maksimalno truditi pridržavati naručenih količina. Točan iznos znat ćete pri primitku paketa.")
                             st.balloons()
                         else:
                             st.error("Greška kod slanja. Provjerite vezu ili nas nazovite.")
                 else:
-                    st.warning("Molimo popunite sva polja!")
+                    st.warning("Molimo popunite sva obavezna polja (*)")
             
             if st.button("🗑️ Isprazni"):
                 st.session_state.cart = []
@@ -139,7 +160,7 @@ if izbor == "🛍️ TRGOVINA":
     st.markdown('<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown('<p class="brand-sub">MESNICA I PRERADA MESA SISAK</p>', unsafe_allow_html=True)
     
-    col_t, col_k = st.columns([2.2, 1])
+    col_t, col_k = st.columns([2.0, 1.2]) # Malo proširena košarica radi rubrika
     with col_t:
         t_cols = st.columns(2)
         for i, p in enumerate(proizvodi):
@@ -164,7 +185,7 @@ if izbor == "🛍️ TRGOVINA":
 elif izbor == "🏢 ZA UGOSTITELJE":
     st.title("🏢 Ugostiteljska Ponuda")
     st.warning("Minimalna količina 10kg, korak 2.5kg.")
-    col_u, col_k = st.columns([2.2, 1])
+    col_u, col_k = st.columns([2.0, 1.2])
     with col_u:
         for r in ugostitelji_ponuda:
             with st.expander(f"🛒 {r['ime']} - {r['cijena']:.2f} €/kg"):
