@@ -3,13 +3,13 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 
-# --- 1. KONFIGURACIJA (ZAKLJUČANO) ---
+# --- 1. KONFIGURACIJA ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
-# --- 2. KOMPLETNI PRIJEVODI (HR, EN, DE) ---
+# --- 2. PRIJEVODI ---
 LANG_MAP = {
     "HR 🇭🇷": {
         "nav_shop": "🛍️ TRGOVINA", "nav_horeca": "🏢 ZA UGOSTITELJE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ O NAMA",
@@ -33,31 +33,31 @@ LANG_MAP = {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 B2B SERVICE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ABOUT US",
         "title_sub": "BUTCHER SHOP & MEAT PROCESSING | 2026.", "cart_title": "🛒 Your Cart",
         "cart_empty": "Your cart is empty.", 
-        "note_vaga": "ℹ️ **Note:** Prices are accurate, but the total is informative. Final weight confirms the price.",
+        "note_vaga": "ℹ️ **Note:** Prices are accurate, final weight confirms the price.",
         "total": "Approx.", "form_name": "Full Name*", "form_tel": "Phone Number*",
         "form_city": "City*", "form_zip": "ZIP Code*", "form_addr": "Address*",
         "form_country": "Country*", "btn_order": "✅ CONFIRM ORDER", "success": "Received! Thank you.",
         "unit_kg": "kg", "unit_pc": "pcs",
         "horeca_title": "Professional service for restaurants",
-        "horeca_text": "Kojundžić Meat Processing offers:\n* **Custom production**\n* **Wholesale prices**\n* **Delivery**",
+        "horeca_text": "Kojundžić Meat Processing offers custom production and wholesale prices.",
         "horeca_mail": "Further information via email:",
         "haccp_title": "HACCP Standards",
         "haccp_text": "Production in 2026 follows strict sanitary conditions.",
         "info_title": "Tradition and Quality",
-        "info_text": "Traditional meat preparation in a modern facility, smoked with selected wood.",
+        "info_text": "Traditional meat preparation, smoked with selected wood.",
         "shipping_data": "Shipping details:"
     },
     "DE 🇩🇪": {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 GASTRONOMIE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ÜBER UNS",
         "title_sub": "METZGEREI & FLEISCHVERARBEITUNG | 2026.", "cart_title": "🛒 Warenkorb",
         "cart_empty": "Ihr Warenkorb ist leer.", 
-        "note_vaga": "ℹ️ **Hinweis:** Die Preise sind korrekt, der Gesamtbetrag ist informativ. Endpreis nach dem Wiegen.",
+        "note_vaga": "ℹ️ **Hinweis:** Endpreis nach dem Wiegen.",
         "total": "Gesamt ca.", "form_name": "Name*", "form_tel": "Telefonnummer*",
         "form_city": "Stadt*", "form_zip": "PLZ*", "form_addr": "Adresse*",
         "form_country": "Land*", "btn_order": "✅ BESTELLUNG BESTÄTIGEN", "success": "Vielen Dank!",
         "unit_kg": "kg", "unit_pc": "Stk",
         "horeca_title": "Service für Gastronomie",
-        "horeca_text": "Metzgerei Kojundžić bietet:\n* **Lohnfertigung**\n* **Großhandelspreise**\n* **Lieferung**",
+        "horeca_text": "Metzgerei Kojundžić bietet Lohnfertigung und Großhandelspreise.",
         "horeca_mail": "Weitere Infos per E-Mail:",
         "haccp_title": "HACCP Standards",
         "haccp_text": "Produktion 2026 nach strengsten Hygienerichtlinien.",
@@ -69,7 +69,7 @@ LANG_MAP = {
 
 st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 
-# --- 3. LOGIKA ZA EMAIL ---
+# --- 3. FUNKCIJA ZA EMAIL ---
 def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt):
     predmet = f"🥩 NOVA NARUDŽBA 2026: {ime}"
     tijelo = f"Kupac: {ime}\nTel: {telefon}\nZemlja: {country}\nLokacija: {ptt} {grad}\nAdresa: {adr}\nJezik: {jezik}\n\nArtikli:\n{detalji}\n\nUkupno: {ukupno} €"
@@ -81,23 +81,22 @@ def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt)
         return True
     except: return False
 
-# --- 4. DIZAJN (SMANJENO ZA 30%) ---
+# --- 4. DIZAJN (Smanjeno za 30%) ---
 st.markdown("""<style>
-    .brand-name { color: #8B0000; font-size: 38px; font-weight: 900; text-align: center; margin:0; }
-    .brand-sub { color: #333; font-size: 14px; text-align: center; margin-bottom: 20px; }
+    .brand-name { color: #8B0000; font-size: 35px; font-weight: 900; text-align: center; margin:0; }
+    .brand-sub { color: #333; font-size: 14px; text-align: center; margin-bottom: 15px; }
     .product-card { background: white; border-radius: 8px; padding: 10px; border: 1px solid #eee; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 5px; }
-    .product-card h4 { font-size: 15px; margin: 5px 0; }
-    .product-card p { font-size: 14px; color: #8B0000; font-weight: bold; }
-    .qty-display { font-size: 16px; font-weight: bold; color: #8B0000; text-align: center; }
-    .stButton>button { height: 28px; line-height: 28px; padding: 0 10px; font-size: 12px; }
+    .product-card h4 { font-size: 14px; margin: 4px 0; }
+    .product-card p { font-size: 13px; color: #8B0000; font-weight: bold; }
+    .qty-display { font-size: 15px; font-weight: bold; color: #8B0000; text-align: center; }
+    .stButton>button { height: 26px; line-height: 26px; padding: 0 8px; font-size: 11px; }
 </style>""", unsafe_allow_html=True)
 
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
 # --- 5. NAVIGACIJA ---
-# Postavljamo HR kao početni jezik
-izabrani_jezik = st.sidebar.selectbox("Language / Jezik / Sprache", list(LANG_MAP.keys()), index=0)
+izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()), index=0)
 T = LANG_MAP[izabrani_jezik]
 choice = st.sidebar.radio("Meni", [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]])
 
@@ -116,7 +115,7 @@ if choice == T["nav_shop"]:
             {"id": 4, "name": "Slavonska kobasica", "price": 16.0, "type": "kg"},
             {"id": 5, "name": "Domaća salama", "price": 25.0, "type": "kg"},
             {"id": 6, "name": "Dimljene kosti", "price": 2.5, "type": "kg"},
-            {"id": 7, "name": "Dimljene nogice/rep mix", "price": 2.5, "type": "kg"},
+            {"id": 7, "name": "Dimljene nogice mix", "price": 2.5, "type": "kg"},
             {"id": 8, "name": "Panceta", "price": 17.0, "type": "kg"},
             {"id": 9, "name": "Dimljeni vrat (BK)", "price": 15.0, "type": "kg"},
             {"id": 10, "name": "Dimljeni kremenadl (BK)", "price": 15.0, "type": "kg"},
@@ -124,15 +123,14 @@ if choice == T["nav_shop"]:
             {"id": 12, "name": "Čvarci", "price": 10.0, "type": "pc"},
         ]
 
-        sub_cols = st.columns(3) # Povećan broj kolona za kompaktnost
+        sub_cols = st.columns(3)
         for idx, p in enumerate(proizvodi):
             with sub_cols[idx % 3]:
                 st.markdown(f'<div class="product-card"><h4>{p["name"]}</h4><p>{p["price"]:.2f} €</p></div>', unsafe_allow_html=True)
-                c1, c2, c3 = st.columns([1, 1, 1])
+                c1, c2, c3 = st.columns(3)
                 if c1.button("➖", key=f"m_{p['id']}"):
                     if p['id'] in st.session_state.cart:
-                        step = 0.5 if p['type'] == 'kg' else 1
-                        st.session_state.cart[p['id']] -= step
+                        st.session_state.cart[p['id']] -= (0.5 if p['type'] == 'kg' else 1)
                         if st.session_state.cart[p['id']] <= 0: del st.session_state.cart[p['id']]
                         st.rerun()
                 qty = st.session_state.cart.get(p['id'], 0.0)
@@ -151,10 +149,10 @@ if choice == T["nav_shop"]:
             for pid, q in st.session_state.cart.items():
                 p = next(x for x in proizvodi if x['id'] == pid)
                 sub = q * p['price']; total += sub
-                st.write(f"✅ **{p['name']}**: {q}{T['unit_kg'] if p['type']=='kg' else T['unit_pc']} = {sub:.2f}€")
+                st.write(f"✅ {p['name']}: {q}{T['unit_kg'] if p['type']=='kg' else T['unit_pc']} = {sub:.2f}€")
                 txt_email += f"- {p['name']}: {q} {p['type']} ({sub:.2f}€)\n"
             st.markdown(f"### {T['total']}: {total:.2f} €")
-
+        
         st.markdown("---")
         st.info(T["note_vaga"])
         with st.form("order_form"):
@@ -170,15 +168,13 @@ if choice == T["nav_shop"]:
                 elif f_name and f_tel and f_city and f_addr:
                     if posalji_email(f_name, f_tel, f_city, f_addr, txt_email, total, izabrani_jezik, f_country, f_ptt):
                         st.success(T["success"]); st.session_state.cart = {}; time.sleep(2); st.rerun()
-                else: st.error("❌ Fill all * fields")
+                else: st.error("Fill * fields")
 
-# --- OSTALE RUBRIKE (ZAKLJUČANO) ---
 elif choice == T["nav_horeca"]:
     st.title(T["horeca_title"]); st.write(T["horeca_text"])
-    st.markdown("---"); st.info(f"📧 **{T['horeca_mail']}** {MOJ_EMAIL}")
+    st.info(f"📧 {T['horeca_mail']} {MOJ_EMAIL}")
 elif choice == T["nav_haccp"]:
     st.title(T["haccp_title"]); st.success(T["haccp_text"])
 elif choice == T["nav_info"]:
     st.title(T["info_title"]); st.write(T["info_text"])
-    st.markdown("---"); st.markdown(f"📍 Sisak | 📧 {MOJ_EMAIL}")
-``` [1] [2] [3]
+    st.markdown(f"📍 Sisak | 📧 {MOJ_EMAIL}")
