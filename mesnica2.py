@@ -13,94 +13,85 @@ LANG_MAP = {
     "HR 🇭🇷": {
         "nav_shop": "🛍️ TRGOVINA", "nav_horeca": "🏢 ZA UGOSTITELJE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ O NAMA",
         "title_sub": "MESNICA I PRERADA MESA | 2026.", "cart_title": "🛒 Vaša Košarica",
-        "cart_empty": "Prazna. Dodajte artikle pomoću +", "note_vaga": "ℹ️ VAŽNO: Cijena je informativna. Točan iznos znat će se nakon vaganja pri primitku paketa.",
+        "cart_empty": "Prazna. Dodajte artikle pomoću +", 
+        "note_vaga": "ℹ️ <b>Napomena:</b> Navedene cijene ispod artikala su točne, dok je iznos u košarici informativan i približan. Točan iznos znat će se nakon vaganja pri primitku paketa.",
         "total": "Približno", "form_name": "Ime i Prezime*", "form_tel": "Broj telefona*",
         "form_city": "Grad*", "form_zip": "Poštanski broj*", "form_addr": "Ulica i kućni broj*",
         "btn_order": "✅ POTVRDI NARUDŽBU", "btn_clear": "🗑️ Isprazni", "success": "Zaprimljeno! Hvala vam.",
-        "unit_kg": "kg", "unit_pc": "kom", 
-        "horeca_text": "Za ugostiteljske objekte radimo uslužnu proizvodnju po dogovoru.",
-        "haccp_text": "ODOBRENI OBJEKT BR. 2686",
-        "info_text": "Trg Josipa Mađerića 1, Sisak"
+        "unit_kg": "kg", "unit_pc": "kom"
     },
     "EN 🇬🇧": {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FOR RESTAURANTS", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ABOUT US",
         "title_sub": "BUTCHER SHOP & MEAT PROCESSING | 2026.", "cart_title": "🛒 Your Cart",
-        "cart_empty": "Empty. Add items using +", "note_vaga": "ℹ️ NOTE: Prices are informative. The exact amount will be known after weighing upon receipt.",
+        "cart_empty": "Empty. Add items using +", 
+        "note_vaga": "ℹ️ <b>Note:</b> Prices listed are accurate, but the cart total is informative and approximate. The exact total will be determined after weighing upon receipt.",
         "total": "Approximate total", "form_name": "Full Name*", "form_tel": "Phone Number*",
         "form_city": "City*", "form_zip": "ZIP Code*", "form_addr": "Street & House Number*",
         "btn_order": "✅ CONFIRM ORDER", "btn_clear": "🗑️ Clear", "success": "Received! Thank you.",
-        "unit_kg": "kg", "unit_pc": "pcs", 
-        "horeca_text": "We offer custom production for restaurants and hotels by agreement.",
-        "haccp_text": "APPROVED ESTABLISHMENT NO. 2686",
-        "info_text": "Trg Josipa Mađerića 1, Sisak, Croatia"
+        "unit_kg": "kg", "unit_pc": "pcs"
     },
     "DE 🇩🇪": {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FÜR GASTRONOMIE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ÜBER UNS",
         "title_sub": "METZGEREI & FLEISCHVERARBEITUNG | 2026.", "cart_title": "🛒 Warenkorb",
-        "cart_empty": "Leer. Artikel mit + hinzufügen", "note_vaga": "ℹ️ INFO: Die Preise sind informativ. Der genaue Betrag steht nach dem Wiegen fest.",
+        "cart_empty": "Leer. Artikel mit + hinzufügen", 
+        "note_vaga": "ℹ️ <b>Hinweis:</b> Die Preise sind korrekt, aber der Gesamtbetrag im Warenkorb ist informativ. Der genaue Betrag wird nach dem Wiegen bei Erhalt ermittelt.",
         "total": "Ungefährer Gesamtbetrag", "form_name": "Vor- und Nachname*", "form_tel": "Telefonnummer*",
         "form_city": "Stadt*", "form_zip": "Postleitzahl*", "form_addr": "Straße & Hausnummer*",
         "btn_order": "✅ BESTELLUNG BESTÄTIGEN", "btn_clear": "🗑️ Leeren", "success": "Eingegangen! Vielen Dank.",
-        "unit_kg": "kg", "unit_pc": "stk", 
-        "horeca_text": "Für Gastronomiebetriebe führen wir Lohnfertigung nach Vereinbarung durch.",
-        "haccp_text": "ZUGELASSENER BETRIEB NR. 2686",
-        "info_text": "Trg Josipa Mađerića 1, Sisak, Kroatien"
+        "unit_kg": "kg", "unit_pc": "stk"
     }
 }
 
 st.set_page_config(page_title="Kojundžić | Mesnica i Prerada", page_icon="🥩", layout="wide")
 
-# --- 2. LOGIKA ZA EMAIL (FIKSNO NA HRVATSKOM) ---
+# --- 2. LOGIKA ZA EMAIL (FIKSNO NA HRVATSKOM ZA VLASNIKA) ---
 def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jezik_korisnika):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
     tijelo = f"""
-    Stigla je nova narudžba putem weba! (Siječanj 2026.)
+    Stigla je nova narudžba putem weba!
     -----------------------------------
-    Kupac: {ime}
-    Telefon: {telefon}
-    Adresa: {adr}, {ptt} {grad}
+    PODACI O KUPCU ZA DOSTAVU:
+    Ime i Prezime: {ime}
+    Broj telefona: {telefon}
+    Grad: {grad}
+    Poštanski broj (PTT): {ptt}
+    Adresa: {adr}
     
-    JEZIK KUPCA: {jezik_korisnika}
+    JEZIK NA KOJEM JE NARUČENO: {jezik_korisnika}
+    DATUM: {datetime.now().strftime('%d.%m.2026. %H:%M')}
     
-    NARUČENI ARTIKLI (Hrvatski):
+    NARUČENI ARTIKLI (Hrvatski nazivi):
     -----------------------------------
     {detalji_hr}
     
-    PRIBLIŽNI IZNOS: {ukupno} €
+    PRIBLIŽNI UKUPNI IZNOS: {ukupno} €
     -----------------------------------
     """
-    msg = MIMEText(tijelo)
-    msg['Subject'] = predmet
-    msg['From'] = MOJ_EMAIL
-    msg['To'] = MOJ_EMAIL
+    msg = MIMEText(tijelo); msg['Subject'] = predmet; msg['From'] = MOJ_EMAIL; msg['To'] = MOJ_EMAIL
     try:
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT); server.starttls()
-        server.login(MOJ_EMAIL, MOJA_LOZINKA)
-        server.sendmail(MOJ_EMAIL, MOJ_EMAIL, msg.as_string()); server.quit()
-        return True
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT); server.starttls(); server.login(MOJ_EMAIL, MOJA_LOZINKA)
+        server.sendmail(MOJ_EMAIL, MOJ_EMAIL, msg.as_string()); server.quit(); return True
     except: return False
 
-# --- 3. ODABIR JEZIKA ---
-col_logo_space, col_lang_picker = st.columns([3, 1])
-with col_lang_picker:
-    izabrani_jezik = st.selectbox("Izaberite jezik / Select Language", list(LANG_MAP.keys()))
+# --- 3. DIZAJN I ODABIR JEZIKA ---
+col_l, col_lang = st.columns([3, 1])
+with col_lang:
+    izabrani_jezik = st.selectbox("Jezik / Language", list(LANG_MAP.keys()))
     T = LANG_MAP[izabrani_jezik]
 
-# --- 4. DIZAJN (CSS) ---
-st.markdown(f"""
-    <style>
-    .stApp {{ background-color: #fdfdfd; }}
-    .brand-name {{ color: #8B0000; font-size: 70px; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom:0px; letter-spacing: 5px; }}
-    .brand-sub {{ color: #333; font-size: 22px; text-align: center; font-weight: 600; margin-top:0px; margin-bottom: 35px; letter-spacing: 2px; }}
-    .product-card {{ background-color: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; margin-bottom:10px; }}
-    .price-tag {{ color: #8B0000; font-size: 20px; font-weight: bold; margin-bottom: 10px; }}
-    .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; width: 100%; }}
-    </style>
-    """, unsafe_allow_html=True)
+st.markdown("""<style>
+    .stApp { background-color: #fdfdfd; }
+    .brand-name { color: #8B0000; font-size: 70px; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom:0px; letter-spacing: 5px; }
+    .brand-sub { color: #333; font-size: 22px; text-align: center; font-weight: 600; margin-top:0px; margin-bottom: 35px; letter-spacing: 2px; }
+    .product-card { background-color: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; margin-bottom:10px; }
+    .price-tag { color: #8B0000; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+    .vaga-napomena { color: #444; font-weight: 500; font-size: 14px; text-align: center; margin-bottom: 15px; border: 1px solid #ddd; padding: 12px; border-radius: 8px; background-color: #fcfcfc; line-height: 1.5; }
+    .stButton>button { background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }
+</style>""", unsafe_allow_html=True)
 
 if 'cart_dict' not in st.session_state: st.session_state.cart_dict = {}
 
-# --- 5. PODACI O PROIZVODIMA ---
+# --- 4. PROIZVODI ---
 proizvodi = [
     {"id": 1, "hr_ime": "Dimljeni hamburger", "ime": {"HR 🇭🇷": "Dimljeni hamburger", "EN 🇬🇧": "Smoked Bacon", "DE 🇩🇪": "Geräucherter Speck"}, "cijena": 12.0, "tip": 0},
     {"id": 2, "hr_ime": "Dimljeni buncek", "ime": {"HR 🇭🇷": "Dimljeni buncek", "EN 🇬🇧": "Smoked Pork Hock", "DE 🇩🇪": "Geräucherte Stelze"}, "cijena": 8.0, "tip": 1},
@@ -117,56 +108,40 @@ proizvodi = [
     {"id": 13, "hr_ime": "Mast", "ime": {"HR 🇭🇷": "Mast", "EN 🇬🇧": "Lard", "DE 🇩🇪": "Schweineschmalz"}, "cijena": 3.0, "tip": 0},
 ]
 
-# --- 6. NAVIGACIJA I STRANICE ---
+# --- 5. NAVIGACIJA ---
 izbor = st.sidebar.radio("NAVIGACIJA", [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]])
 
 if izbor == T["nav_shop"]:
     st.markdown('<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
-    
     col_t, col_k = st.columns([2, 1.2])
     with col_t:
         rows = st.columns(2)
         for idx, p in enumerate(proizvodi):
-            p_vidljivo_ime = p["ime"][izabrani_jezik]
-            p_hr_ime = p["hr_ime"]
+            p_vidi = p["ime"][izabrani_jezik]; p_hr = p["hr_ime"]
             with rows[idx % 2]:
-                st.markdown(f'<div class="product-card"><h3>{p_vidljivo_ime}</h3>', unsafe_allow_html=True)
+                st.markdown(f'<div class="product-card"><h3>{p_vidi}</h3>', unsafe_allow_html=True)
                 lbl = f"€/{T['unit_pc'] if p['tip']==1 else T['unit_kg']}"
                 st.markdown(f'<p class="price-tag">{p["cijena"]:.2f} {lbl}</p>', unsafe_allow_html=True)
-                
-                key = f"p_{p['id']}"
-                step = 1.0 if p["tip"] == 1 else 0.5
-                curr = st.session_state.cart_dict.get(p_hr_ime, {"qty": 0.0})["qty"]
-                
-                val = st.number_input(f"Kol. {p_vidljivo_ime}", min_value=0.0, step=step, value=float(curr), key=key, label_visibility="collapsed")
-                
-                if p["tip"] == 0 and val == 0.5:
-                    val = 1.0; st.session_state[key] = 1.0; st.rerun()
-                
-                st.session_state.cart_dict[p_hr_ime] = {"qty": val, "price": val * p["cijena"], "is_komad": p["tip"] == 1, "p_ime_kupac": p_vidljivo_ime}
+                key = f"p_{p['id']}"; step = 1.0 if p["tip"] == 1 else 0.5
+                curr = st.session_state.cart_dict.get(p_hr, {"qty": 0.0})["qty"]
+                val = st.number_input(f"Kol. {p_vidi}", min_value=0.0, step=step, value=float(curr), key=key, label_visibility="collapsed")
+                if p["tip"] == 0 and val == 0.5: val = 1.0; st.session_state[key] = 1.0; st.rerun()
+                st.session_state.cart_dict[p_hr] = {"qty": val, "price": val * p["cijena"], "is_komad": p["tip"] == 1, "vidi": p_vidi}
                 st.markdown('</div>', unsafe_allow_html=True)
-
     with col_k:
         st.subheader(T["cart_title"])
         aktivni = {k: v for k, v in st.session_state.cart_dict.items() if v['qty'] > 0}
-        if not aktivni:
-            st.write(T["cart_empty"])
+        if not aktivni: st.write(T["cart_empty"])
         else:
-            st.info(T["note_vaga"])
+            st.markdown(f'<div class="vaga-napomena">{T["note_vaga"]}</div>', unsafe_allow_html=True)
             ukupno = 0; detalji_hr = ""
             for hr_ime, pod in aktivni.items():
-                jed_kupac = T["unit_pc"] if pod['is_komad'] else T["unit_kg"]
-                jed_hr = "kom" if pod['is_komad'] else "kg"
-                st.write(f"**{pod['p_ime_kupac']}** - {pod['qty']} {jed_kupac}")
-                ukupno += pod['price']
-                detalji_hr += f"- {hr_ime}: {pod['qty']} {jed_hr}\n"
-            
-            st.write("---")
-            st.markdown(f"### {T['total']}: {ukupno:.2f} €")
-            ime = st.text_input(T["form_name"]); tel = st.text_input(T["form_tel"])
-            grad = st.text_input(T["form_city"]); ptt = st.text_input(T["form_zip"]); adr = st.text_input(T["form_addr"])
-            
+                jed_k = T["unit_pc"] if pod['is_komad'] else T["unit_kg"]
+                st.write(f"**{pod['vidi']}** - {pod['qty']} {jed_k}")
+                ukupno += pod['price']; detalji_hr += f"- {hr_ime}: {pod['qty']} {'kom' if pod['is_komad'] else 'kg'}\n"
+            st.write("---"); st.markdown(f"### {T['total']}: {ukupno:.2f} €")
+            ime = st.text_input(T["form_name"]); tel = st.text_input(T["form_tel"]); grad = st.text_input(T["form_city"]); ptt = st.text_input(T["form_zip"]); adr = st.text_input(T["form_addr"])
             if st.button(T["btn_order"]):
                 if ime and tel and grad and adr:
                     if posalji_email_vlasniku(ime, tel, grad, ptt, adr, detalji_hr, f"{ukupno:.2f}", izabrani_jezik):
@@ -174,17 +149,37 @@ if izbor == T["nav_shop"]:
                 else: st.warning("!")
 
 elif izbor == T["nav_horeca"]:
-    st.title(T["nav_horeca"])
-    st.write(T["horeca_text"])
-    st.write("Kontakt: tomislavtomi90@gmail.com")
+    st.title("🏢 Ugostiteljska Ponuda / HORECA")
+    st.write("### Profesionalna usluga za restorane i hotele")
+    st.write("""
+    Mesnica i prerada mesa Kojundžić nudi posebne pogodnosti za ugostiteljske objekte:
+    - **Uslužna proizvodnja:** Izrada suhomesnatih proizvoda prema vašim specifičnim recepturama.
+    - **Veleprodajne cijene:** Konkurentne cijene prilagođene redovnim isporukama.
+    - **Kvaliteta i kontinuitet:** Strogo kontrolirano domaće porijeklo i stabilna kvaliteta kroz cijelu godinu.
+    """)
+    st.info("Za sve upite i dogovore oko suradnje kontaktirajte nas direktno na: **tomislavtomi90@gmail.com**")
 
 elif izbor == T["nav_haccp"]:
-    st.title(T["nav_haccp"])
-    st.success(f"✅ {T['haccp_text']}")
+    st.title("🧼 HACCP Standardi i Sigurnost")
+    st.success("### ✅ ODOBRENI OBJEKT BR. 2686")
+    st.write("""
+    Naša proizvodnja se odvija pod najstrožim sanitarnim uvjetima u skladu s europskim normama:
+    1. **Sljedivost:** Svaki komad mesa ima jasno vidljivo porijeklo i kontroliran put do vašeg stola.
+    2. **Sigurnost:** Sustav HACCP osigurava da se svaki korak proizvodnje prati i dokumentira.
+    3. **Tradicija i Higijena:** Spajamo starinske načine dimljenja s najsuvremenijim higijenskim standardima.
+    """)
 
 elif izbor == T["nav_info"]:
-    st.title(T["nav_info"])
-    st.write(T["info_text"])
+    st.title("ℹ️ O Nama / About Us")
+    st.write("### Obiteljska tradicija i kvaliteta")
+    st.write("""
+    Smješteni u srcu Siska, ponosni smo na dugogodišnje iskustvo u obradi i preradi mesa. 
+    Sve naše proizvode radimo s posebnom pažnjom, koristeći tradicionalne metode soljenja i dimljenja na drvima bukve i graba.
+    """)
+    st.write("---")
+    st.write("📍 **Lokacija:** Trg Josipa Mađerića 1, 44000 Sisak")
+    st.write("📞 **Kontakt:** tomislavtomi90@gmail.com")
+    st.write("⏰ **Godina osnivanja:** Naša tradicija seže generacijama unazad, a u 2026. nastavljamo s istim žarom.")
 
 st.sidebar.markdown("---")
 st.sidebar.caption("© 2026. Kojundžić Mesnica i Prerada")
