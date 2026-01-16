@@ -3,7 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 
-# --- 1. KONFIGURACIJA I KOMPLETNI PRIJEVODI (ZAKLJUČANO - VRAĆENO NA ORIGINAL) ---
+# --- 1. KONFIGURACIJA I PRIJEVODI (ZAKLJUČANO s ispravljenom napomenom) ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
@@ -14,33 +14,13 @@ LANG_MAP = {
         "nav_shop": "🛍️ TRGOVINA", "nav_horeca": "🏢 ZA UGOSTITELJE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ O NAMA",
         "title_sub": "MESNICA I PRERADA MESA | 2026.", "cart_title": "🛒 Vaša Košarica",
         "cart_empty": "Prazna. Dodajte artikle.", 
-        "note_vaga": "ℹ️ <b>Napomena:</b> Navedene cijene su točne, dok je iznos u košarici informativan. Točan iznos znat će se nakon vaganja.",
+        "note_vaga": """ℹ️ <b>Napomena:</b> Navedene cijene su točne, dok je iznos u košarici informativan. 
+                     Točan iznos znat će se nakon vaganja. Konačan iznos znati ćete kada vam paket stigne, 
+                     a mi ćemo se truditi da količine i informativni iznos bude što točniji pravom iznosu.""",
         "total": "Približno", "form_name": "Ime i Prezime*", "form_tel": "Broj telefona*",
         "form_city": "Grad*", "form_zip": "Poštanski broj*", "form_addr": "Ulica i kućni broj*",
         "form_country": "Država*", "btn_order": "✅ POTVRDI NARUDŽBU", "success": "Zaprimljeno! Hvala vam.",
-        "unit_kg": "kg", "unit_pc": "kom",
-        "horeca_title": "Profesionalna usluga za restorane i hotele",
-        "horeca_text": "Mesnica i prerada mesa Kojundžić nudi posebne pogodnosti za ugostiteljske objekte:\n* **Uslužna proizvodnja:** Izrada suhomesnatih proizvoda prema vašim recepturama.\n* **Veleprodajne cijene:** Konkurentne cijene prilagođene redovnim isporukama.\n* **Kvaliteta:** Strogo kontrolirano domaće porijeklo.\n* **Dostava:** Na veće količine dostava vlastitim vozilima.",
-        "haccp_title": "HACCP Standardi i Sigurnost",
-        "haccp_text": "Naša proizvodnja odvija se pod najstrožim sanitarnim uvjetima:\n1. **Sljedivost:** Jasno vidljivo porijeklo svakog komada.\n2. **Sigurnost:** HACCP sustav prati svaki korak.\n3. **Higijena:** Spoj tradicije i najsuvremenijih standarda.",
-        "info_title": "Obiteljska tradicija i kvaliteta",
-        "info_text": "Smješteni u srcu Siska, ponosni smo na dugogodišnje iskustvo. Naša se stoka kupuje isključivo na farmama malih proizvođača iz okolice Siska:\n* **Park prirode Lonjsko polje**\n* **Banovina**\n* **Posavina**"
-    },
-    "EN 🇬🇧": {
-        "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FOR RESTAURANTS", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ABOUT US",
-        "title_sub": "BUTCHER SHOP & MEAT PROCESSING | 2026.", "cart_title": "🛒 Your Cart",
-        "cart_empty": "Empty. Add items.", 
-        "note_vaga": "ℹ️ <b>Note:</b> Prices listed are accurate, but the cart total is informative. The exact total will be determined after weighing.",
-        "total": "Approx. total", "form_name": "Full Name*", "form_tel": "Phone*",
-        "form_city": "City*", "form_zip": "ZIP*", "form_addr": "Address*",
-        "form_country": "Country*", "btn_order": "✅ CONFIRM ORDER", "success": "Received! Thank you.",
-        "unit_kg": "kg", "unit_pc": "pcs",
-        "horeca_title": "Professional service for restaurants and hotels",
-        "horeca_text": "Kojundžić Butcher Shop offers special benefits for catering facilities:\n* **Custom production:** Meat products according to your recipes.\n* **Wholesale prices:** Competitive prices for regular deliveries.\n* **Quality:** Strictly controlled local origin.\n* **Delivery:** For larger quantities, delivery with our own vehicles.",
-        "haccp_title": "HACCP Standards and Safety",
-        "haccp_text": "Our production takes place under the strictest sanitary conditions:\n1. **Traceability:** Clearly visible origin of every piece.\n2. **Safety:** The HACCP system monitors every step.",
-        "info_title": "Family tradition and quality",
-        "info_text": "Located in the heart of Sisak, we are proud of our experience."
+        "unit_kg": "kg", "unit_pc": "kom"
     }
 }
 
@@ -58,7 +38,7 @@ def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_ko
         return True
     except: return False
 
-# --- 3. DIZAJN (VRAĆENO NA VAŠ ORIGINALNI STIL) ---
+# --- 3. DIZAJN I NAVIGACIJA (ZAKLJUČANO) ---
 izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
 menu = [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]]
@@ -69,23 +49,40 @@ st.markdown(f"""<style>
     .brand-sub {{ color: #333; font-size: 18px; text-align: center; font-weight: 600; margin-bottom: 25px; }}
     .product-card {{ background: white; border-radius: 12px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: 0.3s; }}
     .product-img {{ border-radius: 8px; width: 100%; height: 180px; object-fit: cover; margin-bottom: 10px; }}
-    .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }}
+    .stButton>button {{ 
+        background-color: white !important; 
+        color: #8B0000 !important; 
+        border: 1px solid #8B0000 !important; 
+        border-radius: 10px !important;
+        width: 100%;
+        transition: 0.2s;
+    }}
+    .stButton>button:hover {{ background-color: #8B0000 !important; color: white !important; }}
+    .qty-display {{ font-size: 20px; font-weight: 700; color: #4a0000; text-align: center; padding-top: 5px; }}
 </style>""", unsafe_allow_html=True)
 
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 4. TRGOVINA (S VAŠIM PROIZVODIMA I SMART CLICK LOGIKOM) ---
+# --- 4. TRGOVINA (OTVORENO - SMART CLICK & PUNA NAPOMENA) ---
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
 
     proizvodi = [
-        {"id": 1, "hr_name": "Dimljeni hamburger", "name": {"HR 🇭🇷": "Dimljeni hamburger", "EN 🇬🇧": "Smoked Bacon"}, "price": 12.0, "type": "kg", "img": "https://images.unsplash.com"},
-        {"id": 2, "hr_name": "Dimljeni buncek", "name": {"HR 🇭🇷": "Dimljeni buncek", "EN 🇬🇧": "Smoked Pork Hock"}, "price": 8.0, "type": "pc", "img": "https://images.unsplash.com"},
-        {"id": 3, "hr_name": "Dimljeni prsni vršci", "name": {"HR 🇭🇷": "Dimljeni prsni vršci", "EN 🇬🇧": "Smoked Rib Tips"}, "price": 7.5, "type": "pc", "img": "https://images.unsplash.com"},
-        {"id": 4, "hr_name": "Slavonska kobasica", "name": {"HR 🇭🇷": "Slavonska kobasica", "EN 🇬🇧": "Slavonian Sausage"}, "price": 16.0, "type": "kg", "img": "https://images.unsplash.com"},
-        {"id": 12, "hr_name": "Čvarci", "name": {"HR 🇭🇷": "Čvarci", "EN 🇬🇧": "Pork Cracklings"}, "price": 20.0, "type": "kg", "img": "https://images.unsplash.com"}
+        {"id": 1, "hr_name": "Dimljeni hamburger", "price": 12.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 2, "hr_name": "Dimljeni buncek", "price": 8.0, "type": "pc", "img": "https://images.unsplash.com"},
+        {"id": 3, "hr_name": "Dimljeni prsni vršci", "price": 9.0, "type": "pc", "img": "https://images.unsplash.com"},
+        {"id": 4, "hr_name": "Slavonska kobasica", "price": 16.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 5, "hr_name": "Domaća salama", "price": 25.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 6, "hr_name": "Dimljene kosti", "price": 2.5, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 7, "hr_name": "Dimljene nogice, uši, rep - mix", "price": 2.5, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 8, "hr_name": "Panceta", "price": 17.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 9, "hr_name": "Dimljeni vrat bez kosti", "price": 15.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 10, "hr_name": "Dimljeni kremenadl bez kosti", "price": 15.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 11, "hr_name": "Buđola", "price": 20.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 12, "hr_name": "Čvarci", "price": 20.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 13, "hr_name": "Mast", "price": 3.0, "type": "kg", "img": "https://images.unsplash.com"}
     ]
 
     col_main, col_cart = st.columns([2, 1])
@@ -96,31 +93,35 @@ if choice == T["nav_shop"]:
             with inner_cols[i % 2]:
                 st.markdown(f"""<div class="product-card">
                     <img src="{p['img']}" class="product-img">
-                    <h3>{p['name'][izabrani_jezik]}</h3>
-                    <p style="font-size: 18px; font-weight: bold;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
+                    <h3>{p['hr_name']}</h3>
+                    <p style="color:#666;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
                 </div>""", unsafe_allow_html=True)
                 
                 trenutna = st.session_state.cart.get(p['id'], 0.0)
-                btn_col1, btn_col2 = st.columns(2)
+                c1, c2, c3 = st.columns(3)
                 
-                if btn_col1.button(f"➕ {T['unit_'+p['type']]}", key=f"add_{p['id']}"):
-                    if p['type'] == "pc":
-                        st.session_state.cart[p['id']] = trenutna + 1
-                    else:
-                        st.session_state.cart[p['id']] = 1.0 if trenutna == 0 else trenutna + 0.5
-                    st.rerun()
-
-                if btn_col2.button(f"➖ {T['unit_'+p['type']]}", key=f"sub_{p['id']}"):
+                if c1.button("−", key=f"min_{p['id']}"):
                     if trenutna > 0:
                         skok = 1.0 if (p['type'] == "pc" or trenutna == 1.0) else 0.5
                         st.session_state.cart[p['id']] = max(0.0, trenutna - skok)
                         if st.session_state.cart[p['id']] == 0: del st.session_state.cart[p['id']]
                         st.rerun()
+                
+                c2.markdown(f'<p class="qty-display">{trenutna}</p>', unsafe_allow_html=True)
+                
+                if c3.button("＋", key=f"pls_{p['id']}"):
+                    if p['type'] == "pc":
+                        st.session_state.cart[p['id']] = trenutna + 1
+                    else:
+                        st.session_state.cart[p['id']] = 1.0 if trenutna == 0 else trenutna + 0.5
+                    st.rerun()
+                st.write("---")
 
     with col_cart:
         st.markdown(f"### {T['cart_title']}")
         suma = 0.0
         detalji_mail = ""
+        
         if not st.session_state.cart:
             st.info(T["cart_empty"])
         else:
@@ -129,25 +130,27 @@ if choice == T["nav_shop"]:
                 sub = p["price"] * qty
                 suma += sub
                 detalji_mail += f"- {p['hr_name']}: {qty} {p['type']}\n"
-                st.write(f"**{p['name'][izabrani_jezik]}**: {qty} {T['unit_'+p['type']]} = {sub:.2f} €")
+                st.markdown(f"**{p['hr_name']}**  \n{qty} {T['unit_'+p['type']]} = {sub:.2f} €")
             
             st.write("---")
             st.subheader(f"{T['total']}: {suma:.2f} €")
+            # PRIKAZ PUNE NAPOMENE
             st.markdown(T["note_vaga"], unsafe_allow_html=True)
 
-            with st.form("premium_order"):
-                f_ime = st.text_input(T["form_name"])
-                f_tel = st.text_input(T["form_tel"])
-                f_cty = st.text_input(T["form_country"], value="Hrvatska")
-                f_grad = st.text_input(T["form_city"])
-                f_ptt = st.text_input(T["form_zip"])
-                f_adr = st.text_input(T["form_addr"])
-                if st.form_submit_button(T["btn_order"]):
-                    if f_ime and f_tel and f_grad and f_adr:
-                        if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, detalji_mail, suma, izabrani_jezik, f_cty, f_ptt):
-                            st.success(T["success"]); st.session_state.cart = {}; st.balloons()
-                        else: st.error("Greška pri slanju.")
-                    else: st.warning("Popunite sva polja.")
+            with st.expander("📍 PODACI ZA DOSTAVU", expanded=True):
+                with st.form("final_order"):
+                    f_ime = st.text_input(T["form_name"])
+                    f_tel = st.text_input(T["form_tel"])
+                    f_cty = st.text_input(T["form_country"], value="Hrvatska")
+                    f_grad = st.text_input(T["form_city"])
+                    f_ptt = st.text_input(T["form_zip"])
+                    f_adr = st.text_input(T["form_addr"])
+                    if st.form_submit_button(T["btn_order"]):
+                        if f_ime and f_tel and f_grad and f_adr:
+                            if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, detalji_mail, suma, "HR 🇭🇷", f_cty, f_ptt):
+                                st.success(T["success"]); st.session_state.cart = {}; st.balloons()
+                            else: st.error("Greška pri slanju.")
+                        else: st.warning("Popunite obavezna polja.")
 
 # --- 5. OSTALE RUBRIKE (ZAKLJUČANO) ---
 elif choice == T["nav_horeca"]:
