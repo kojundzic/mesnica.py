@@ -3,13 +3,13 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 
-# --- 1. KONFIGURACIJA (ZAKLJUČANO) ---
+# --- 1. KONFIGURACIJA (TRAJNO ZAKLJUČANO) ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
-# --- 2. PRIJEVODI (UKLJUČENI ARTIKLI) ---
+# --- 2. PRIJEVODI I ARTIKLI (TRAJNO ZAKLJUČANO) ---
 LANG_MAP = {
     "HR 🇭🇷": {
         "nav_shop": "🛍️ TRGOVINA", "nav_horeca": "🏢 ZA UGOSTITELJE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ O NAMA",
@@ -46,10 +46,10 @@ LANG_MAP = {
         "horeca_mail": "Info via email:", "haccp_title": "HACCP", "haccp_text": "Strict safety standards 2026.",
         "info_title": "Tradition", "info_text": "Located in Sisak, traditional meat processing in modern facility.",
         "shipping_data": "Shipping info:",
-        "p1": "Smoked hamburger bacon", "p2": "Smoked pork hock", "p3": "Smoked brisket tips",
+        "p1": "Smoked bacon", "p2": "Smoked pork hock", "p3": "Smoked brisket tips",
         "p4": "Slavonian sausage", "p5": "Homemade salami", "p6": "Smoked bones",
-        "p7": "Smoked pork feet mix", "p8": "Pancetta", "p9": "Smoked neck (Boneless)",
-        "p10": "Smoked loin (Boneless)", "p11": "Smoked tenderloin", "p12": "Pork rinds"
+        "p7": "Smoked pork feet", "p8": "Pancetta", "p9": "Smoked neck",
+        "p10": "Smoked loin", "p11": "Smoked tenderloin", "p12": "Pork rinds"
     },
     "DE 🇩🇪": {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 GASTRONOMIE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ÜBER UNS",
@@ -62,18 +62,18 @@ LANG_MAP = {
         "unit_kg": "kg", "unit_pc": "Stk",
         "horeca_title": "Gastronomie", "horeca_text": "Lohnfertigung und Großhandelspreise.",
         "horeca_mail": "Infos per E-Mail:", "haccp_title": "HACCP", "haccp_text": "Produktion 2026.",
-        "info_title": "Tradition", "info_text": "In Sisak ansässig, traditionelle Zubereitung in modernem Betrieb.",
+        "info_title": "Tradition", "info_text": "In Sisak ansässig, traditionelle Zubereitung.",
         "shipping_data": "Versanddetails:",
         "p1": "Geräucherter Hamburger", "p2": "Geräucherte Stelze", "p3": "Geräucherte Brustspitzen",
         "p4": "Slawonische Wurst", "p5": "Hausgemachte Salami", "p6": "Geräucherte Knochen",
-        "p7": "Geräucherte Füße Mix", "p8": "Pancetta", "p9": "Geräucherter Nacken (o.K.)",
-        "p10": "Geräuchertes Karree (o.K.)", "p11": "Geräucherte Lende", "p12": "Grieben"
+        "p7": "Geräucherte Füße", "p8": "Pancetta", "p9": "Geräucherter Nacken",
+        "p10": "Geräuchertes Karree", "p11": "Geräucherte Lende", "p12": "Grieben"
     }
 }
 
 st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 
-# --- 3. FUNKCIJA ZA EMAIL (ZAKLJUČANO) ---
+# --- 3. FUNKCIJA ZA EMAIL (TRAJNO ZAKLJUČANO) ---
 def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt):
     predmet = f"🥩 NOVA NARUDŽBA 2026: {ime}"
     tijelo = f"Kupac: {ime}\nTel: {telefon}\nZemlja: {country}\nLokacija: {ptt} {grad}\nAdresa: {adr}\nJezik: {jezik}\n\nArtikli:\n{detalji}\n\nUkupno: {ukupno} €"
@@ -85,7 +85,7 @@ def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt)
         return True
     except: return False
 
-# --- 4. DIZAJN (SMANJENO ZA 30%) ---
+# --- 4. DIZAJN (SMANJENO ZA 30% - TRAJNO ZAKLJUČANO) ---
 st.markdown("""<style>
     .brand-name { color: #8B0000; font-size: 35px; font-weight: 900; text-align: center; margin:0; }
     .brand-sub { color: #333; font-size: 14px; text-align: center; margin-bottom: 15px; }
@@ -99,8 +99,8 @@ st.markdown("""<style>
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 5. NAVIGACIJA ---
-izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()), index=0)
+# --- 5. NAVIGACIJA (TRAJNO ZAKLJUČANO) ---
+izabrani_jezik = st.sidebar.selectbox("Jezik / Language / Sprache", list(LANG_MAP.keys()), index=0)
 T = LANG_MAP[izabrani_jezik]
 choice = st.sidebar.radio("Meni", [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]])
 
@@ -137,9 +137,14 @@ if choice == T["nav_shop"]:
                         st.session_state.cart[p['id']] -= (0.5 if p['type'] == 'kg' else 1)
                         if st.session_state.cart[p['id']] <= 0: del st.session_state.cart[p['id']]
                         st.rerun()
+                
+                # JEDINICA MJERE UZ BROJ
                 qty = st.session_state.cart.get(p['id'], 0.0)
                 display_qty = int(qty) if qty == int(qty) else qty
-                c2.markdown(f'<p class="qty-display">{display_qty}</p>', unsafe_allow_html=True)
+                mjerna_jedinica = T["unit_kg"] if p['type'] == "kg" else T["unit_pc"]
+                
+                c2.markdown(f'<p class="qty-display">{display_qty} {mjerna_jedinica}</p>', unsafe_allow_html=True)
+                
                 if c3.button("➕", key=f"p_{p['id']}"):
                     if p['id'] not in st.session_state.cart: st.session_state.cart[p['id']] = 1.0
                     else: st.session_state.cart[p['id']] += (0.5 if p['type'] == 'kg' else 1)
@@ -178,4 +183,4 @@ elif choice == T["nav_haccp"]:
     st.title(T["haccp_title"]); st.success(T["haccp_text"])
 elif choice == T["nav_info"]:
     st.title(T["info_title"]); st.write(T["info_text"])
-    st.markdown(f"📍 Sisak | 📧 {MOJ_EMAIL}")
+    st.markdown("---"); st.markdown(f"📍 Sisak | 📧 {MOJ_EMAIL}")
