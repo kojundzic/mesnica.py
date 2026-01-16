@@ -6,7 +6,7 @@ from datetime import datetime
 
 # --- 1. POSTAVKE ZA OBAVIJESTI ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
-MOJA_LOZINKA = "czdx ndpg owzy wgqu"  # Vaša lozinka aplikacije
+MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
@@ -68,7 +68,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Inicijalizacija košarice
 if 'cart_dict' not in st.session_state: st.session_state.cart_dict = {}
 
 # --- 4. PODACI O PROIZVODIMA ---
@@ -129,7 +128,7 @@ def prikazi_kosaricu(col):
             if st.button("✅ POTVRDI NARUDŽBU"):
                 if ime and telefon and grad and ptt and adr:
                     with st.spinner('Slanje narudžbe...'):
-                        if posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_narudzbe, f"{ukupno:.2f}"):
+                        if posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_za_email, f"{ukupno:.2f}"):
                             st.session_state.cart_dict = {}
                             st.success("🎉 Zaprimljeno! Točan iznos znat ćete nakon vaganja pri primitku paketa.")
                             st.balloons()
@@ -164,36 +163,32 @@ if izbor == "🛍️ TRGOVINA":
                 st.markdown(f'<p class="price-tag">{p["cijena"]:.2f} {labela}</p>', unsafe_allow_html=True)
                 
                 pocetna = st.session_state.cart_dict.get(p["ime"], {"qty": 0.0})["qty"]
-                step_val = 1.0 if pocetna == 0 else (1.0 if p["tip"] == 1 else 0.5)
+                
+                # LOGIKA KORAKA:
+                if p["tip"] == 1:
+                    # Artikl na komade: krene od 0, korak je uvijek 1
+                    step_val = 1.0
+                else:
+                    # Artikl na kg: ako je 0, prvi klik skače na 1.0, dalje ide po 0.5
+                    step_val = 1.0 if pocetna == 0 else 0.5
                 
                 qty = st.number_input(f"Količina {p['ime']}", min_value=0.0, step=step_val, value=float(pocetna), key=f"inp_{p['id']}", label_visibility="collapsed")
+                
+                # Ažuriranje košarice u realnom vremenu
                 st.session_state.cart_dict[p["ime"]] = {"qty": qty, "price": qty * p["cijena"], "is_komad": p["tip"] == 1}
                 st.markdown('</div>', unsafe_allow_html=True)
     prikazi_kosaricu(col_k)
 
 elif izbor == "🏢 ZA UGOSTITELJE":
     st.title("🏢 Ugostiteljska Ponuda i Partnerstva")
-    
     st.markdown("""
     <div class="u-box">
         <h3>Tražite pouzdanog partnera za svoj objekt?</h3>
-        <p style="font-size: 18px; line-height: 1.6;">
-            Osim standardne ponude vrhunskog mesa, na <b>veće količine radimo i uslužnu proizvodnju po dogovoru</b>, 
-            prilagođenu vašim recepturama i specifičnim potrebama vašeg poslovanja.
-        </p>
-        <p style="font-size: 18px; line-height: 1.6;">
-            Vjerujemo u osobni pristup, stoga smo mogućnost automatskih narudžbi za ugostitelje zamijenili 
-            <b>izravnim dogovorom</b>. Na taj način osiguravamo najbolje uvjete, cijene i termine dostave koji 
-            vam najviše odgovaraju.
-        </p>
-        <hr>
-        <p style="font-size: 20px; font-weight: bold; color: #8B0000;">
-            Javite nam se s povjerenjem:
-        </p>
+        <p style="font-size: 18px;">Na veće količine radimo i uslužnu proizvodnju po dogovoru, prilagođenu vašim recepturama.</p>
+        <p style="font-size: 18px;">Javite nam se s povjerenjem:</p>
         <ul style="font-size: 18px; list-style-type: none; padding-left: 0;">
-            <li>📞 <b>Mobitel:</b> +385 91 XXX XXXX (Tomislav)</li>
+            <li>📞 <b>Mobitel:</b> +385 91 XXX XXXX</li>
             <li>📧 <b>E-mail:</b> tomislavtomi90@gmail.com</li>
-            <li>📍 <b>Lokacija:</b> Sisak, Trg Josipa Mađerića 1</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
@@ -201,7 +196,6 @@ elif izbor == "🏢 ZA UGOSTITELJE":
 elif izbor == "🧼 HACCP":
     st.title("🧼 HACCP Sigurnost")
     st.success("✅ ODOBRENI OBJEKT BR. 2686")
-    st.write("Svi proizvodi prolaze strogu kontrolu kvalitete i sljedivosti.")
 
 elif izbor == "ℹ️ O NAMA":
     st.title("ℹ️ Kontakt")
