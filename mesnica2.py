@@ -3,7 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 
-# --- 1. KONFIGURACIJA I PRIJEVODI (ZAKLJUČANO) ---
+# --- 1. KONFIGURACIJA I KOMPLETNI PRIJEVODI (UKLJUČEN DE 🇩🇪) ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
@@ -43,15 +43,31 @@ LANG_MAP = {
         "haccp_text": "Production under strict sanitary conditions.",
         "info_title": "Tradition",
         "info_text": "Located in Sisak..."
+    },
+    "DE 🇩🇪": {
+        "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FÜR GASTRONOMIE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ÜBER UNS",
+        "title_sub": "METZGEREI & FLEISCHVERARBEITUNG | 2026.", "cart_title": "🛒 Warenkorb",
+        "cart_empty": "Leer. Artikel hinzufügen.", 
+        "note_vaga": "Hinweis: Die Preise sind korrekt, der Gesamtbetrag ist informativ. Der Endpreis wird nach dem Wiegen ermittelt.",
+        "total": "Gesamt ca.", "form_name": "Vor- und Nachname*", "form_tel": "Telefon*",
+        "form_city": "Stadt*", "form_zip": "PLZ*", "form_addr": "Adresse*",
+        "form_country": "Land*", "btn_order": "✅ BESTELLUNG BESTÄTIGEN", "success": "Eingegangen! Danke.",
+        "unit_kg": "kg", "unit_pc": "Stk",
+        "horeca_title": "Professioneller Service für Gastronomie",
+        "horeca_text": "Metzgerei Kojundžić bietet Vorteile für Gastronomiebetriebe:\n* **Lohnfertigung:** Produkte nach Ihrem Rezept.\n* **Großhandelspreise:** Günstige Konditionen.\n* **Qualität:** Lokale Herkunft.\n* **Lieferung:** Eigene Fahrzeuge.",
+        "haccp_title": "HACCP-Standards",
+        "haccp_text": "Produktion unter strengsten sanitären Bedingungen.",
+        "info_title": "Tradition",
+        "info_text": "Im Herzen von Sisak..."
     }
 }
 
 st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 
-# --- 2. LOGIKA ZA EMAIL (ZAKLJUČANO) ---
+# --- 2. LOGIKA ZA EMAIL ---
 def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_korisnika, country, ptt):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
-    tijelo = f"Kupac: {ime}\nTel: {telefon}\nDržava: {country}\nGrad: {grad} ({ptt})\nAdresa: {adr}\n\nArtikli:\n{detalji_hr}\n\nUkupno: {ukupno} €"
+    tijelo = f"Kupac: {ime}\nTel: {telefon}\nDržava: {country}\nGrad: {grad} ({ptt})\nAdresa: {adr}\n\nJezik kupca: {jezik_korisnika}\n\nArtikli:\n{detalji_hr}\n\nUkupno: {ukupno} €"
     msg = MIMEText(tijelo); msg['Subject'] = predmet; msg['From'] = MOJ_EMAIL; msg['To'] = MOJ_EMAIL
     try:
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
@@ -60,8 +76,8 @@ def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_ko
         return True
     except: return False
 
-# --- 3. DIZAJN I DINAMIČKA NAVIGACIJA (ISPRAVLJENO) ---
-izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()))
+# --- 3. DIZAJN I DINAMIČKA NAVIGACIJA ---
+izabrani_jezik = st.sidebar.selectbox("Jezik / Language / Sprache", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
 
 menu = [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]]
@@ -151,7 +167,7 @@ if choice == T["nav_shop"]:
             
             st.write("---")
             st.subheader(f"{T['total']}: {suma:.2f} €")
-            with st.expander("📍 PODACI ZA DOSTAVU", expanded=True):
+            with st.expander("📍 " + T["form_city"].replace("*", ""), expanded=True):
                 with st.form("final_order"):
                     f_ime = st.text_input(T["form_name"])
                     f_tel = st.text_input(T["form_tel"])
@@ -164,9 +180,9 @@ if choice == T["nav_shop"]:
                             if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, detalji_mail, suma, izabrani_jezik, f_cty, f_ptt):
                                 st.success(T["success"]); st.session_state.cart = {}; st.balloons(); st.rerun()
                             else: st.error("Greška pri slanju.")
-                        else: st.error("Molimo ispunite SVA polja označena sa (*).")
+                        else: st.error(T["form_name"] + " " + T["form_city"])
 
-# --- 5. OSTALE RUBRIKE (ISPRAVLJENO) ---
+# --- 5. OSTALE RUBRIKE ---
 elif choice == T["nav_horeca"]:
     st.header(T["horeca_title"])
     st.markdown(T["horeca_text"])
