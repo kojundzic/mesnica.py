@@ -44,7 +44,7 @@ LANG_MAP = {
 
 st.set_page_config(page_title="Kojundžić | Mesnica i Prerada", page_icon="🥩", layout="wide")
 
-# --- 2. LOGIKA ZA EMAIL ---
+# --- 2. LOGIKA ZA EMAIL (VLASNIKU NA HRVATSKOM) ---
 def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jezik_korisnika):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
     tijelo = f"""
@@ -76,7 +76,7 @@ def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jez
     except: return False
 
 # --- 3. DIZAJN ---
-izabrani_jezik = st.sidebar.selectbox("Language / Jezik", list(LANG_MAP.keys()))
+izabrani_jezik = st.sidebar.selectbox("Izaberite jezik / Select Language", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
 
 st.markdown("""
@@ -86,7 +86,6 @@ st.markdown("""
     .product-card { background-color: white; border-radius: 10px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom:15px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05); }
     .vaga-napomena { color: #444; font-size: 13px; text-align: center; margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px; background-color: #f9f9f9; line-height: 1.4; }
     .stButton>button { background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }
-    .section-img { border-radius: 15px; margin-bottom: 20px; width: 100%; object-fit: cover; height: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -142,7 +141,7 @@ if izbor == T["nav_shop"]:
                 else: st.warning("Popunite polja!")
 
 elif izbor == T["nav_horeca"]:
-    st.image("https://images.unsplash.com", caption=T["nav_horeca"], use_container_width=True)
+    st.image("https://images.unsplash.com")
     st.title(T["nav_horeca"])
     st.subheader("Profesionalna usluga za restorane i hotele")
     st.markdown("""
@@ -156,7 +155,7 @@ elif izbor == T["nav_horeca"]:
     """)
 
 elif izbor == T["nav_haccp"]:
-    st.image("https://images.unsplash.com", caption=T["nav_haccp"], use_container_width=True)
+    st.image("https://images.unsplash.com")
     st.title(T["nav_haccp"])
     st.success("### ✅ ODOBRENI OBJEKT BR. 2686")
     st.markdown("""
@@ -167,7 +166,7 @@ elif izbor == T["nav_haccp"]:
     """)
 
 elif izbor == T["nav_info"]:
-    st.image("https://images.unsplash.com", caption=T["nav_info"], use_container_width=True)
+    st.image("https://images.pexels.com")
     st.title(T["nav_info"])
     st.write("### Obiteljska tradicija i kvaliteta")
     st.markdown("""
