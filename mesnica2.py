@@ -9,7 +9,7 @@ MOJA_LOZINKA = "czdx ndpg owzy wgqu"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
-# --- 2. TEKSTOVI I PRIJEVODI (ZAKLJUČANO - ISPRAVLJENA NAPOMENA) ---
+# --- 2. PRIJEVODI (ZAKLJUČANO) ---
 LANG_MAP = {
     "HR 🇭🇷": {
         "nav_shop": "🛍️ TRGOVINA", "nav_horeca": "🏢 ZA UGOSTITELJE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ O NAMA",
@@ -32,23 +32,23 @@ LANG_MAP = {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FOR RESTAURANTS", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ABOUT US",
         "title_sub": "BUTCHER SHOP & MEAT PROCESSING | 2026.", "cart_title": "🛒 Your Cart",
         "cart_empty": "Your cart is empty.", 
-        "note_vaga": "Note: Prices are accurate, final price after weighing.",
+        "note_vaga": "Note: Final price will be known after weighing.",
         "total": "Approx.", "form_name": "Name*", "form_tel": "Phone*",
         "form_city": "City*", "form_zip": "ZIP*", "form_addr": "Address*",
         "form_country": "Country*", "btn_order": "✅ CONFIRM ORDER", "success": "Received!",
         "unit_kg": "kg", "unit_pc": "pcs",
         "horeca_title": "B2B Service", "horeca_text": "Special conditions for restaurants...",
-        "horeca_mail": "Contact us:", "haccp_title": "HACCP", "haccp_text": "Strict safety in 2026.",
-        "info_title": "Tradition", "info_text": "Traditional meat processing in Sisak with modern facilities and selected wood smoking."
+        "horeca_mail": "Contact us via email:", "haccp_title": "HACCP Safety", "haccp_text": "Standards in 2026.",
+        "info_title": "Tradition", "info_text": "Traditional meat processing in Sisak since 2026."
     }
 }
 
 st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 
-# --- 3. FUNKCIJA ZA EMAIL (ZAKLJUČANO) ---
+# --- 3. LOGIKA ZA EMAIL (ZAKLJUČANO) ---
 def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt):
     predmet = f"🥩 NOVA NARUDŽBA 2026: {ime}"
-    tijelo = f"Kupac: {ime}\nTel: {telefon}\nDržava: {country}\nGrad: {ptt} {grad}\nAdresa: {adr}\nJezik: {jezik}\n\nArtikli:\n{detalji}\n\nUkupno cca: {ukupno} €"
+    tijelo = f"Kupac: {ime}\nTel: {telefon}\nDržava: {country}\nLokacija: {ptt} {grad}\nAdresa: {adr}\nJezik: {jezik}\n\nArtikli:\n{detalji}\n\nUkupno cca: {ukupno} €"
     msg = MIMEText(tijelo); msg['Subject'] = predmet; msg['From'] = MOJ_EMAIL; msg['To'] = MOJ_EMAIL
     try:
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
@@ -69,17 +69,16 @@ if "cart" not in st.session_state:
     st.session_state.cart = {}
 
 # --- 5. NAVIGACIJA (ZAKLJUČANO) ---
-izabrani_jezik = st.sidebar.selectbox("Language / Jezik / Sprache", list(LANG_MAP.keys()))
+izabrani_jezik = st.sidebar.selectbox("Language / Jezik", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
 choice = st.sidebar.radio("Meni", [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]])
 
-# --- TRGOVINA (SADRŽAJ SE MOŽE MIJENJATI, KOŠARICA JE DESNO) ---
+# --- 6. TRGOVINA (DINAMIČKI DIO) ---
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
 
-    # Glavni raspored: Lijevo proizvodi (2/3), Desno košarica (1/3)
-    col_proizvodi, col_kosarica = st.columns([2, 1])
+    col_proizvodi, col_desno = st.columns([2, 1])
 
     with col_proizvodi:
         proizvodi = [
@@ -97,49 +96,75 @@ if choice == T["nav_shop"]:
             {"id": 12, "name": "Čvarci", "price": 10.0, "type": "pc"},
         ]
 
-        sub_cols = st.columns(2) # Proizvodi u 2 kolone unutar lijeve strane
+        sub_cols = st.columns(2)
         for idx, p in enumerate(proizvodi):
             with sub_cols[idx % 2]:
                 st.markdown(f'<div class="product-card"><h4>{p["name"]}</h4><p>{p["price"]:.2f} €</p></div>', unsafe_allow_html=True)
                 c1, c2, c3 = st.columns(3)
+                
+                # MINUS
                 if c1.button("➖", key=f"m_{p['id']}"):
                     if p['id'] in st.session_state.cart:
-                        st.session_state.cart[p['id']] -= 0.5 if p['type'] == 'kg' else 1
+                        step = 0.5 if p['type'] == 'kg' else 1
+                        st.session_state.cart[p['id']] -= step
                         if st.session_state.cart[p['id']] <= 0: del st.session_state.cart[p['id']]
                         st.rerun()
+                
+                # PRIKAZ
                 qty = st.session_state.cart.get(p['id'], 0.0)
-                c2.markdown(f'<p class="qty-display">{qty}</p>', unsafe_allow_html=True)
+                display_qty = int(qty) if qty == int(qty) else qty
+                c2.markdown(f'<p class="qty-display">{display_qty}</p>', unsafe_allow_html=True)
+                
+                # PLUS (0 -> 1 -> +0.5 za kg)
                 if c3.button("➕", key=f"p_{p['id']}"):
-                    st.session_state.cart[p['id']] = qty + (0.5 if p['type'] == 'kg' else 1)
+                    if p['id'] not in st.session_state.cart:
+                        st.session_state.cart[p['id']] = 1.0
+                    else:
+                        step = 0.5 if p['type'] == 'kg' else 1
+                        st.session_state.cart[p['id']] += step
                     st.rerun()
 
-    with col_kosarica:
+    with col_desno:
         st.subheader(T["cart_title"])
+        total = 0.0
+        txt_email = ""
+        
         if not st.session_state.cart:
             st.info(T["cart_empty"])
         else:
-            total = 0.0; txt = ""
             for pid, q in st.session_state.cart.items():
                 p = next(x for x in proizvodi if x['id'] == pid)
-                sub = q * p['price']; total += sub
-                st.write(f"**{p['name']}** ({q} {T['unit_kg'] if p['type']=='kg' else T['unit_pc']}) = {sub:.2f}€")
-                txt += f"- {p['name']}: {q} {p['type']} ({sub:.2f}€)\n"
-            
+                sub = q * p['price']
+                total += sub
+                st.write(f"✅ **{p['name']}**: {q} {T['unit_kg'] if p['type']=='kg' else T['unit_pc']} = {sub:.2f}€")
+                txt_email += f"- {p['name']}: {q} {p['type']} ({sub:.2f}€)\n"
             st.markdown(f"### {T['total']}: {total:.2f} €")
-            st.info(T["note_vaga"])
-            
-            with st.form("order_form"):
-                f_name = st.text_input(T["form_name"]); f_tel = st.text_input(T["form_tel"])
-                f_country = st.text_input(T["form_country"]); f_city = st.text_input(T["form_city"])
-                f_ptt = st.text_input(T["form_zip"]); f_addr = st.text_input(T["form_addr"])
-                if st.form_submit_button(T["btn_order"]):
-                    if f_name and f_tel and f_city and f_addr:
-                        if posalji_email(f_name, f_tel, f_city, f_addr, txt, total, izabrani_jezik, f_country, f_ptt):
-                            st.success(T["success"]); st.session_state.cart = {}
-                            time.sleep(2); st.rerun()
-                    else: st.error("❌ Ispunite sva polja sa *")
 
-# --- OSTALE RUBRIKE (TRAJNO ZAKLJUČANO) ---
+        st.markdown("---")
+        st.info(T["note_vaga"])
+        
+        with st.form("order_form"):
+            st.markdown("##### Podaci za dostavu:")
+            f_name = st.text_input(T["form_name"])
+            f_tel = st.text_input(T["form_tel"])
+            f_country = st.text_input(T["form_country"])
+            f_city = st.text_input(T["form_city"])
+            f_ptt = st.text_input(T["form_zip"])
+            f_addr = st.text_input(T["form_addr"])
+            
+            if st.form_submit_button(T["btn_order"]):
+                if not st.session_state.cart:
+                    st.error("Košarica je prazna.")
+                elif f_name and f_tel and f_city and f_addr:
+                    if posalji_email(f_name, f_tel, f_city, f_addr, txt_email, total, izabrani_jezik, f_country, f_ptt):
+                        st.success(T["success"])
+                        st.session_state.cart = {}
+                        time.sleep(2)
+                        st.rerun()
+                else:
+                    st.error("❌ Ispunite sva polja sa *")
+
+# --- 7. OSTALE RUBRIKE (ZAKLJUČANO) ---
 elif choice == T["nav_horeca"]:
     st.title(T["horeca_title"]); st.write(T["horeca_text"])
     st.markdown("---"); st.info(f"📧 **{T['horeca_mail']}** {MOJ_EMAIL}")
