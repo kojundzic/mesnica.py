@@ -39,15 +39,17 @@ def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_ko
     except: return False
 
 # --- 3. DIZAJN I NAVIGACIJA (ZAKLJUČANO) ---
-izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()))
+izabrani_jezik = "HR 🇭🇷" # Fiksirano na HR prema zahtjevu
 T = LANG_MAP[izabrani_jezik]
+
+st.sidebar.markdown(f"### {izabrani_jezik}")
 menu = [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]]
 choice = st.sidebar.radio("Navigacija", menu, label_visibility="collapsed")
 
 st.markdown(f"""<style>
     .brand-name {{ color: #8B0000; font-size: 55px; font-weight: 900; text-align: center; text-transform: uppercase; margin:0; }}
     .brand-sub {{ color: #333; font-size: 18px; text-align: center; font-weight: 600; margin-bottom: 25px; }}
-    .product-card {{ background: white; border-radius: 12px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: 0.3s; }}
+    .product-card {{ background: white; border-radius: 12px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }}
     .product-img {{ border-radius: 8px; width: 100%; height: 180px; object-fit: cover; margin-bottom: 10px; }}
     .stButton>button {{ 
         background-color: white !important; 
@@ -58,13 +60,13 @@ st.markdown(f"""<style>
         transition: 0.2s;
     }}
     .stButton>button:hover {{ background-color: #8B0000 !important; color: white !important; }}
-    .qty-display {{ font-size: 20px; font-weight: 700; color: #4a0000; text-align: center; padding-top: 5px; }}
+    .qty-display {{ font-size: 22px; font-weight: 900; color: #4a0000; text-align: center; padding-top: 5px; margin:0; }}
 </style>""", unsafe_allow_html=True)
 
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 4. TRGOVINA (ISPRAVLJENI SVI ERRORI) ---
+# --- 4. TRGOVINA (TESTIRANO I ISPRAVLJENO) ---
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
@@ -85,7 +87,6 @@ if choice == T["nav_shop"]:
         {"id": 13, "hr_name": "Mast", "price": 3.0, "type": "kg", "img": "https://images.unsplash.com"}
     ]
 
-    # ISPRAVLJENO: st.columns(2) definira izgled (glavno vs košarica)
     col_main, col_cart = st.columns([2, 1])
 
     with col_main:
@@ -94,13 +95,12 @@ if choice == T["nav_shop"]:
             with inner_cols[i % 2]:
                 st.markdown(f"""<div class="product-card">
                     <img src="{p['img']}" class="product-img">
-                    <h3>{p['hr_name']}</h3>
-                    <p style="color:#666;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
+                    <h3 style="margin:0;">{p['hr_name']}</h3>
+                    <p style="color:#666; font-weight: bold; font-size:18px;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
                 </div>""", unsafe_allow_html=True)
                 
                 trenutna = st.session_state.cart.get(p['id'], 0.0)
-                # ISPRAVLJENO: st.columns(3) za kontrole artikla
-                c1, c2, c3 = st.columns(3)
+                c1, c2, c3 = st.columns([1, 1, 1])
                 
                 if c1.button("−", key=f"min_{p['id']}"):
                     if trenutna > 0:
@@ -121,6 +121,7 @@ if choice == T["nav_shop"]:
 
     with col_cart:
         st.markdown(f"### {T['cart_title']}")
+        # NAPOMENA: UVIJEK VIDLJIVA
         st.info(T["note_vaga"], icon="ℹ️")
         st.write("---")
 
@@ -150,14 +151,17 @@ if choice == T["nav_shop"]:
                     f_adr = st.text_input(T["form_addr"])
                     
                     if st.form_submit_button(T["btn_order"]):
-                        # STRIKTNA PROVJERA
+                        # STRIKTNA PROVJERA SVIH PODATAKA
                         if f_ime and f_tel and f_cty and f_grad and f_ptt and f_adr:
                             if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, detalji_mail, suma, "HR 🇭🇷", f_cty, f_ptt):
-                                st.success(T["success"]); st.session_state.cart = {}; st.balloons(); st.rerun()
+                                st.success(T["success"])
+                                st.session_state.cart = {}
+                                st.balloons()
+                                st.rerun()
                             else: 
                                 st.error("Greška pri slanju.")
                         else: 
-                            st.error("Narudžba nije poslana. Molimo ispunite SVA polja za dostavu.")
+                            st.error("NARUDŽBA ODBIJENA: Molimo popunite SVA polja označena sa (*).")
 
 # --- 5. OSTALE RUBRIKE (ZAKLJUČANO) ---
 elif choice == T["nav_horeca"]:
