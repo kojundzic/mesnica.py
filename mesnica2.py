@@ -35,8 +35,6 @@ def posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_narudzb
     {detalji_narudzbe}
     
     PRIBLIŽNI UKUPNI IZNOS: {ukupno} €
-    
-    (Napomena: Kupac je obaviješten da se točna cijena utvrđuje nakon vaganja.)
     """
     msg = MIMEText(tijelo)
     msg['Subject'] = predmet
@@ -53,7 +51,7 @@ def posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_narudzb
     except:
         return False
 
-# --- 3. DIZAJN I STILIZACIJA ---
+# --- 3. DIZAJN ---
 st.markdown("""
     <style>
     .stApp { background-color: #fdfdfd; }
@@ -64,7 +62,6 @@ st.markdown("""
     .sidebar-cart { background-color: #ffffff; padding: 25px; border-radius: 15px; border: 1px solid #ddd; }
     .stButton>button { background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; width: 100%; }
     .vaga-napomena { color: #444; font-weight: 500; font-size: 14px; text-align: center; margin-bottom: 15px; border: 1px solid #ddd; padding: 12px; border-radius: 8px; background-color: #fcfcfc; line-height: 1.5; }
-    .u-box { background-color: #f8f9fa; padding: 30px; border-radius: 15px; border-left: 5px solid #8B0000; margin-top: 20px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -96,13 +93,12 @@ def prikazi_kosaricu(col):
         aktivni_artikli = {k: v for k, v in st.session_state.cart_dict.items() if v['qty'] > 0}
         
         if not aktivni_artikli:
-            st.write("Vaša košarica je trenutno prazna. Počnite dodavati artikle pomoću znaka +.")
+            st.write("Vaša košarica je prazna. Koristite + za dodavanje artikala.")
         else:
             st.markdown("""
             <div class="vaga-napomena">
                 ℹ️ <b>Napomena:</b> Navedene cijene ispod artikala su točne, dok je iznos u košarici informativan i približan. 
-                Točan iznos znat će se nakon vaganja, odnosno pri primitku paketa. 
-                Prodavatelj će se truditi maksimalno pridržavati naručenih količina kako bi iznos informativne i prave cijene bio što točniji.
+                Točan iznos znat će se nakon vaganja pri primitku paketa. 
             </div>
             """, unsafe_allow_html=True)
             
@@ -116,42 +112,34 @@ def prikazi_kosaricu(col):
             st.write("---")
             st.markdown(f"### Približno: {ukupno:.2f} €")
             
-            st.markdown("#### Podaci za dostavu:")
             ime = st.text_input("Ime i Prezime*")
-            telefon = st.text_input("Broj telefona (za kurirsku službu)*")
-            col_geo1, col_geo2 = st.columns(2)
-            grad = col_geo1.text_input("Grad*")
-            ptt = col_geo2.text_input("Poštanski broj*")
-            drzava = st.text_input("Država*", value="Hrvatska")
+            telefon = st.text_input("Broj telefona*")
+            grad = st.text_input("Grad*")
+            ptt = st.text_input("Poštanski broj*")
             adr = st.text_input("Ulica i kućni broj*")
             
             if st.button("✅ POTVRDI NARUDŽBU"):
                 if ime and telefon and grad and ptt and adr:
-                    with st.spinner('Slanje narudžbe...'):
-                        if posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_za_email, f"{ukupno:.2f}"):
-                            st.session_state.cart_dict = {}
-                            st.success("🎉 Zaprimljeno! Točan iznos znat ćete nakon vaganja pri primitku paketa.")
-                            st.balloons()
-                        else:
-                            st.error("Greška kod slanja.")
+                    if posalji_email_vlasniku(ime, telefon, "Hrvatska", grad, ptt, adr, detalji_za_email, f"{ukupno:.2f}"):
+                        st.session_state.cart_dict = {}
+                        st.success("Zaprimljeno! Hvala vam.")
+                        st.balloons()
+                    else:
+                        st.error("Greška kod slanja.")
                 else:
                     st.warning("Popunite sva polja!")
             
-            if st.button("🗑️ Isprazni"):
+            if st.button("🗑️ Isprazni košaricu"):
                 st.session_state.cart_dict = {}
                 st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 6. STRANICE ---
-with st.sidebar:
-    st.markdown("## 🥩 IZBORNIK")
-    izbor = st.radio("NAVIGACIJA", ["🛍️ TRGOVINA", "🏢 ZA UGOSTITELJE", "🧼 HACCP", "ℹ️ O NAMA"])
-    st.write("---")
-    st.caption(f"Sisak, {datetime.now().strftime('%d.%m.%2026.')}")
+# --- 6. STRANICA TRGOVINE ---
+izbor = st.sidebar.radio("NAVIGACIJA", ["🛍️ TRGOVINA", "🏢 ZA UGOSTITELJE", "🧼 HACCP", "ℹ️ O NAMA"])
 
 if izbor == "🛍️ TRGOVINA":
     st.markdown('<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
-    st.markdown('<p class="brand-sub">MESNICA I PRERADA MESA SISAK</p>', unsafe_allow_html=True)
+    st.markdown('<p class="brand-sub">MESNICA SISAK - SVJEŽE I DOMAĆE</p>', unsafe_allow_html=True)
     
     col_t, col_k = st.columns([2.0, 1.2])
     with col_t:
@@ -159,50 +147,42 @@ if izbor == "🛍️ TRGOVINA":
         for i, p in enumerate(proizvodi):
             with t_cols[i % 2]:
                 st.markdown(f'<div class="product-card"><h3>{p["ime"]}</h3>', unsafe_allow_html=True)
-                labela = "€/kom*" if p["tip"] == 1 else "€/kg"
-                st.markdown(f'<p class="price-tag">{p["cijena"]:.2f} {labela}</p>', unsafe_allow_html=True)
+                lbl = "€/kom" if p["tip"] == 1 else "€/kg"
+                st.markdown(f'<p class="price-tag">{p["cijena"]:.2f} {lbl}</p>', unsafe_allow_html=True)
                 
-                pocetna = st.session_state.cart_dict.get(p["ime"], {"qty": 0.0})["qty"]
+                # Ključna logika za stalni "skok" s 0 na 1 kg
+                input_key = f"inp_{p['id']}"
                 
-                # LOGIKA KORAKA:
-                if p["tip"] == 1:
-                    # Artikl na komade: krene od 0, korak je uvijek 1
-                    step_val = 1.0
-                else:
-                    # Artikl na kg: ako je 0, prvi klik skače na 1.0, dalje ide po 0.5
-                    step_val = 1.0 if pocetna == 0 else 0.5
+                # Dohvati trenutno stanje iz košarice
+                current_qty = st.session_state.cart_dict.get(p["ime"], {"qty": 0.0})["qty"]
                 
-                qty = st.number_input(f"Količina {p['ime']}", min_value=0.0, step=step_val, value=float(pocetna), key=f"inp_{p['id']}", label_visibility="collapsed")
+                # Prikaz number_input komponente
+                # Za kg koristimo step 0.5, za komad step 1.0
+                step = 1.0 if p["tip"] == 1 else 0.5
+                val = st.number_input(f"Količina {p['ime']}", min_value=0.0, step=step, value=float(current_qty), key=input_key, label_visibility="collapsed")
                 
-                # Ažuriranje košarice u realnom vremenu
-                st.session_state.cart_dict[p["ime"]] = {"qty": qty, "price": qty * p["cijena"], "is_komad": p["tip"] == 1}
+                # PROVJERA: Ako je vrijednost postala 0.5 (što znači da je kupac s 0 kliknuo +), 
+                # mi ju odmah ispravljamo na 1.0. Ovo radi stalno.
+                if p["tip"] == 0 and val == 0.5:
+                    val = 1.0
+                    st.session_state[input_key] = 1.0
+                    st.rerun()
+
+                # Ažuriraj košaricu
+                st.session_state.cart_dict[p["ime"]] = {"qty": val, "price": val * p["cijena"], "is_komad": p["tip"] == 1}
                 st.markdown('</div>', unsafe_allow_html=True)
     prikazi_kosaricu(col_k)
 
 elif izbor == "🏢 ZA UGOSTITELJE":
-    st.title("🏢 Ugostiteljska Ponuda i Partnerstva")
-    st.markdown("""
-    <div class="u-box">
-        <h3>Tražite pouzdanog partnera za svoj objekt?</h3>
-        <p style="font-size: 18px;">Na veće količine radimo i uslužnu proizvodnju po dogovoru, prilagođenu vašim recepturama.</p>
-        <p style="font-size: 18px;">Javite nam se s povjerenjem:</p>
-        <ul style="font-size: 18px; list-style-type: none; padding-left: 0;">
-            <li>📞 <b>Mobitel:</b> +385 91 XXX XXXX</li>
-            <li>📧 <b>E-mail:</b> tomislavtomi90@gmail.com</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    st.title("🏢 Ugostiteljska Ponuda")
+    st.write("Javite nam se izravno na: tomislavtomi90@gmail.com")
 
 elif izbor == "🧼 HACCP":
-    st.title("🧼 HACCP Sigurnost")
+    st.title("🧼 HACCP")
     st.success("✅ ODOBRENI OBJEKT BR. 2686")
 
 elif izbor == "ℹ️ O NAMA":
     st.title("ℹ️ Kontakt")
-    st.write(f"📍 **Adresa:** Trg Josipa Mađerića 1, Sisak")
-    st.write(f"📧 **Email:** {MOJ_EMAIL}")
+    st.write("Sisak, Trg Josipa Mađerića 1")
 
-# --- FOOTER ---
-st.write("---")
-st.markdown('<p style="text-align: center; color: #777; font-size: 13px;">Navedene cijene ispod artikala su točne. Iznos u košarici je informativan i približan, a točan iznos znat će se nakon vaganja pri primitku paketa.</p>', unsafe_allow_html=True)
 st.caption("© 2026. Mesnica Kojundžić Sisak")
