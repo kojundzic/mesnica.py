@@ -44,7 +44,7 @@ LANG_MAP = {
 
 st.set_page_config(page_title="Kojundžić | Mesnica i Prerada", page_icon="🥩", layout="wide")
 
-# --- 2. LOGIKA ZA EMAIL (VLASNIKU NA HRVATSKOM) ---
+# --- 2. LOGIKA ZA EMAIL ---
 def posalji_email_vlasniku(ime, telefon, grad, ptt, adr, detalji_hr, ukupno, jezik_korisnika):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
     tijelo = f"""
@@ -84,7 +84,6 @@ st.markdown("""
     .brand-name { color: #8B0000; font-size: 60px; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom:0px; letter-spacing: 3px; }
     .brand-sub { color: #333; font-size: 20px; text-align: center; font-weight: 600; margin-top:0px; margin-bottom: 30px; }
     .product-card { background-color: white; border-radius: 10px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom:15px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05); }
-    .vaga-napomena { color: #444; font-size: 13px; text-align: center; margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px; background-color: #f9f9f9; line-height: 1.4; }
     .stButton>button { background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }
 </style>
 """, unsafe_allow_html=True)
@@ -127,7 +126,7 @@ if izbor == T["nav_shop"]:
         aktivni = {k: v for k, v in st.session_state.cart.items() if v['qty'] > 0}
         if not aktivni: st.info(T["cart_empty"])
         else:
-            st.markdown(f'<div class="vaga-napomena">{T["note_vaga"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="background:#f9f9f9; padding:10px; border-radius:8px; font-size:13px; text-align:center; border:1px solid #ddd; margin-bottom:15px;">{T["note_vaga"]}</div>', unsafe_allow_html=True)
             total = 0; detalji_hr = ""
             for hr_ime, pod in aktivni.items():
                 st.write(f"**{pod['vidi']}**: {pod['qty']} {pod['type']} ({pod['price']:.2f} €)")
@@ -141,7 +140,8 @@ if izbor == T["nav_shop"]:
                 else: st.warning("Popunite polja!")
 
 elif izbor == T["nav_horeca"]:
-    st.image("https://images.unsplash.com")
+    # SLIKA: Profesionalno rashladno vozilo (Direct link)
+    st.image("https://cdn.pixabay.com", use_container_width=True)
     st.title(T["nav_horeca"])
     st.subheader("Profesionalna usluga za restorane i hotele")
     st.markdown("""
@@ -155,7 +155,8 @@ elif izbor == T["nav_horeca"]:
     """)
 
 elif izbor == T["nav_haccp"]:
-    st.image("https://images.unsplash.com")
+    # SLIKA: Higijena i kontrola (Direct link)
+    st.image("https://cdn.pixabay.com", use_container_width=True)
     st.title(T["nav_haccp"])
     st.success("### ✅ ODOBRENI OBJEKT BR. 2686")
     st.markdown("""
@@ -166,7 +167,8 @@ elif izbor == T["nav_haccp"]:
     """)
 
 elif izbor == T["nav_info"]:
-    st.image("https://images.pexels.com")
+    # SLIKA: Pašnjak i stoka (Direct link)
+    st.image("https://cdn.pixabay.com", use_container_width=True)
     st.title(T["nav_info"])
     st.write("### Obiteljska tradicija i kvaliteta")
     st.markdown("""
