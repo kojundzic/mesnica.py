@@ -56,7 +56,7 @@ LANG_MAP = {
         "haccp_title": "HACCP-Standards und Sicherheit",
         "haccp_text": "Unsere Produktion findet unter strengsten sanitären Bedingungen statt:\n1. **Rückverfolgbarkeit:** Klar ersichtliche Herkunft jedes Stücks.\n2. **Sicherheit:** Das HACCP-System überwacht jeden Schritt.\n3. **Hygiene:** Tradition kombiniert mit modernsten Standards.",
         "info_title": "Familientradition und Qualität",
-        "info_text": "Im Herzen von Sisak gelegen, sind wir stolz auf unsere experience. Unser Vieh wird ausschließlich von kleinen Bauernhöfen rund um Sisak gekauft:\n* **Naturpark Lonjsko Polje**\n* **Region Banovina**\n* **Region Posavina**"
+        "info_text": "Im Herzen von Sisak gelegen, sind wir stolz auf unsere Erfahrung. Unser Vieh wird ausschließlich von kleinen Bauernhöfen rund um Sisak gekauft:\n* **Naturpark Lonjsko Polje**\n* **Region Banovina**\n* **Region Posavina**"
     }
 }
 
@@ -74,16 +74,20 @@ def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_ko
         return True
     except: return False
 
-# --- 3. JEZIK I DIZAJN (ZAKLJUČANO) ---
+# --- 3. SIDEBAR: JEZIK I NAVIGACIJA (VRACENO NA MJESTO) ---
 izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
+
+# Navigacija odmah ispod jezika u sidebaru
+menu = [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]]
+choice = st.sidebar.radio("Navigacija", menu, label_visibility="collapsed")
 
 st.markdown(f"""<style>
     .brand-name {{ color: #8B0000; font-size: 55px; font-weight: 900; text-align: center; text-transform: uppercase; margin:0; }}
     .brand-sub {{ color: #333; font-size: 18px; text-align: center; font-weight: 600; margin-bottom: 25px; }}
     .product-card {{ background: white; border-radius: 12px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: 0.3s; }}
     .product-img {{ border-radius: 8px; width: 100%; height: 180px; object-fit: cover; margin-bottom: 10px; }}
-    .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }}
+    .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; width: 100%; }}
 </style>""", unsafe_allow_html=True)
 
 # --- 4. PROIZVODI (ZAKLJUČANO) ---
@@ -94,15 +98,10 @@ proizvodi = [
     {"id": 12, "hr_name": "Čvarci", "name": {"HR 🇭🇷": "Čvarci", "EN 🇬🇧": "Pork Cracklings", "DE 🇩🇪": "Grammeln"}, "price": 20.0, "type": "kg", "img": "https://images.unsplash.com"}
 ]
 
-# Inicijalizacija košarice u session_state (da se ne briše pri kliku)
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 5. NAVIGACIJA ---
-menu = [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]]
-choice = st.selectbox("Izbornik", menu, label_visibility="collapsed")
-
-# --- RUBRIKA TRGOVINA (S KOŠARICOM) ---
+# --- PRIKAZ SADRŽAJA ---
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
@@ -116,7 +115,7 @@ if choice == T["nav_shop"]:
                 st.markdown(f"""
                 <div class="product-card">
                     <img src="{p['img']}" class="product-img">
-                    <h3>{p['name'][izabrani_jezik]}</h3>
+                    <h3 style="margin-bottom:10px;">{p['name'][izabrani_jezik]}</h3>
                     <p style="font-size: 20px; color: #8B0000; font-weight: bold;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -160,12 +159,12 @@ if choice == T["nav_shop"]:
                             if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, lista_za_email, suma, izabrani_jezik):
                                 st.success(T["success"])
                                 st.session_state.cart = {}
+                                st.balloons()
                             else:
                                 st.error("Greška kod slanja maila.")
                         else:
                             st.warning("Popunite sva polja.")
 
-# --- OSTALE RUBRIKE (ZAKLJUČANO) ---
 elif choice == T["nav_horeca"]:
     st.header(T["horeca_title"])
     st.markdown(T["horeca_text"])
@@ -177,3 +176,4 @@ elif choice == T["nav_haccp"]:
 elif choice == T["nav_info"]:
     st.header(T["info_title"])
     st.markdown(T["info_text"])
+    st.map(data={'lat': [45.485], 'lon': [16.373]})
