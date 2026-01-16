@@ -3,7 +3,9 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 
-# --- 1. KONFIGURACIJA I KOMPLETNI PRIJEVODI (ZAKLJUČANO) ---
+# ==============================================================================
+# SECTION 1 & 2: ZAKLJUČANO (Konfiguracija, Email, Dizajn, Prijevodi, Navigacija)
+# ==============================================================================
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
@@ -54,15 +56,12 @@ LANG_MAP = {
         "horeca_title": "Professioneller Service für Gastronomie",
         "horeca_text": "Metzgerei Kojundžić bietet besondere Vorteile für Gastronomiebetriebe:\n* **Lohnfertigung:** Fleischprodukte nach Ihren Rezepten.\n* **Großhandelspreise:** Wettbewerbsfähige Preise für Lieferungen.\n* **Qualität:** Streng kontrollierte lokale Herkunft.\n* **Lieferung:** Bei größeren Mengen Lieferung mit eigenen Fahrzeugen.",
         "haccp_title": "HACCP-Standards und Sicherheit",
-        "haccp_text": "Unsere Produktion findet unter strengsten sanitären Bedingungen statt:\n1. **Rückverfolgbarkeit:** Klar ersichtliche Herkunft jedes Stücks.\n2. **Sicherheit:** Das HACCP-System überwacht jeden Schritt.\n3. **Hygiene:** Tradition kombiniert mit modernsten Standards.",
-        "info_title": "Familientradition und Qualität",
+        "haccp_text": "Unsere Produktion findet unter strengsten sanitären Bedingungen statt:\n1. **Rückverfolgbarkeit:** Klar ersichtliche Herkunft jedes Stücks.\n2. **Sicherheit:** Das HACCP-System monitors every step.\n3. **Hygiene:** Tradition combined with modern standards.",
+        "info_title": "Familientradition und kvalitet",
         "info_text": "Im Herzen von Sisak gelegen, sind wir stolz auf unsere Erfahrung. Unser Vieh wird ausschließlich von kleinen Bauernhöfen rund um Sisak gekauft:\n* **Naturpark Lonjsko Polje**\n* **Region Banovina**\n* **Region Posavina**"
     }
 }
 
-st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
-
-# --- 2. LOGIKA ZA EMAIL (ZAKLJUČANO) ---
 def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_korisnika):
     predmet = f"🥩 NOVA NARUDŽBA: {ime}"
     tijelo = f"Kupac: {ime}\nTel: {telefon}\nGrad: {grad}\nAdresa: {adr}\n\nJezik kupca: {jezik_korisnika}\n\nArtikli:\n{detalji_hr}\n\nUkupno: {ukupno} €"
@@ -74,11 +73,9 @@ def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_ko
         return True
     except: return False
 
-# --- 3. SIDEBAR: JEZIK I NAVIGACIJA (VRACENO NA MJESTO) ---
+st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
-
-# Navigacija odmah ispod jezika u sidebaru
 menu = [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]]
 choice = st.sidebar.radio("Navigacija", menu, label_visibility="collapsed")
 
@@ -90,21 +87,23 @@ st.markdown(f"""<style>
     .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; width: 100%; }}
 </style>""", unsafe_allow_html=True)
 
-# --- 4. PROIZVODI (ZAKLJUČANO) ---
-proizvodi = [
-    {"id": 1, "hr_name": "Dimljeni hamburger", "name": {"HR 🇭🇷": "Dimljeni hamburger", "EN 🇬🇧": "Smoked Bacon", "DE 🇩🇪": "Geräucherter Speck"}, "price": 12.0, "type": "kg", "img": "https://images.unsplash.com"},
-    {"id": 2, "hr_name": "Dimljeni buncek", "name": {"HR 🇭🇷": "Dimljeni buncek", "EN 🇬🇧": "Smoked Pork Hock", "DE 🇩🇪": "Geräucherte Stelze"}, "price": 8.0, "type": "pc", "img": "https://images.unsplash.com"},
-    {"id": 4, "hr_name": "Slavonska kobasica", "name": {"HR 🇭🇷": "Slavonska kobasica", "EN 🇬🇧": "Slavonian Sausage", "DE 🇩🇪": "Slawonische Wurst"}, "price": 16.0, "type": "kg", "img": "https://images.unsplash.com"},
-    {"id": 12, "hr_name": "Čvarci", "name": {"HR 🇭🇷": "Čvarci", "EN 🇬🇧": "Pork Cracklings", "DE 🇩🇪": "Grammeln"}, "price": 20.0, "type": "kg", "img": "https://images.unsplash.com"}
-]
-
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- PRIKAZ SADRŽAJA ---
+# ==============================================================================
+# SECTION 3: OTVORENO (Trgovina - Specijalna logika dodavanja)
+# ==============================================================================
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
+
+    proizvodi = [
+        {"id": 1, "hr_name": "Dimljeni hamburger", "name": {"HR 🇭🇷": "Dimljeni hamburger", "EN 🇬🇧": "Smoked Bacon", "DE 🇩🇪": "Geräucherter Speck"}, "price": 12.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 2, "hr_name": "Dimljeni buncek", "name": {"HR 🇭🇷": "Dimljeni buncek", "EN 🇬🇧": "Smoked Pork Hock", "DE 🇩🇪": "Geräucherte Stelze"}, "price": 8.0, "type": "pc", "img": "https://images.unsplash.com"},
+        {"id": 3, "hr_name": "Dimljeni prsni vršci", "name": {"HR 🇭🇷": "Dimljeni prsni vršci", "EN 🇬🇧": "Smoked Rib Tips", "DE 🇩🇪": "Geräucherte Rippenspitzen"}, "price": 7.5, "type": "pc", "img": "https://images.unsplash.com"},
+        {"id": 4, "hr_name": "Slavonska kobasica", "name": {"HR 🇭🇷": "Slavonska kobasica", "EN 🇬🇧": "Slavonian Sausage", "DE 🇩🇪": "Slawonische Wurst"}, "price": 16.0, "type": "kg", "img": "https://images.unsplash.com"},
+        {"id": 12, "hr_name": "Čvarci", "name": {"HR 🇭🇷": "Čvarci", "EN 🇬🇧": "Pork Cracklings", "DE 🇩🇪": "Grammeln"}, "price": 20.0, "type": "kg", "img": "https://images.unsplash.com"}
+    ]
 
     col_main, col_cart = st.columns([2, 1])
 
@@ -112,32 +111,33 @@ if choice == T["nav_shop"]:
         inner_cols = st.columns(2)
         for i, p in enumerate(proizvodi):
             with inner_cols[i % 2]:
-                st.markdown(f"""
-                <div class="product-card">
-                    <img src="{p['img']}" class="product-img">
-                    <h3 style="margin-bottom:10px;">{p['name'][izabrani_jezik]}</h3>
-                    <p style="font-size: 20px; color: #8B0000; font-weight: bold;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"""<div class="product-card"><img src="{p['img']}" class="product-img"><h3>{p['name'][izabrani_jezik]}</h3>
+                <p style="font-size: 20px; color: #8B0000; font-weight: bold;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p></div>""", unsafe_allow_html=True)
+                
+                # LOGIKA: Komad +1 | KG: Prvi klik 1, ostali +0.5
                 if st.button(f"➕ {p['name'][izabrani_jezik]}", key=f"add_{p['id']}"):
-                    st.session_state.cart[p['id']] = st.session_state.cart.get(p['id'], 0) + 1
+                    trenutna = st.session_state.cart.get(p['id'], 0.0)
+                    if p['type'] == "pc":
+                        st.session_state.cart[p['id']] = trenutna + 1
+                    else:
+                        st.session_state.cart[p['id']] = 1.0 if trenutna == 0 else trenutna + 0.5
                     st.rerun()
 
     with col_cart:
         st.markdown(f"### {T['cart_title']}")
         suma = 0.0
         lista_za_email = ""
-        
         if not st.session_state.cart:
             st.info(T["cart_empty"])
         else:
             for pid, qty in list(st.session_state.cart.items()):
                 p = next(x for x in proizvodi if x["id"] == pid)
-                suma += p["price"] * qty
+                subtotal = p["price"] * qty
+                suma += subtotal
                 lista_za_email += f"- {p['hr_name']}: {qty} {p['type']}\n"
                 
-                c1, c2 = st.columns([3, 1])
-                c1.write(f"**{p['name'][izabrani_jezik]}** ({qty})")
+                c1, c2 = st.columns([4, 1])
+                c1.write(f"**{p['name'][izabrani_jezik]}**\n{qty} {T['unit_'+p['type']]} = {subtotal:.2f} €")
                 if c2.button("❌", key=f"rem_{pid}"):
                     del st.session_state.cart[pid]
                     st.rerun()
@@ -152,28 +152,19 @@ if choice == T["nav_shop"]:
                     f_tel = st.text_input(T["form_tel"])
                     f_grad = st.text_input(T["form_city"])
                     f_adr = st.text_input(T["form_addr"])
-                    poslano = st.form_submit_button(T["btn_order"])
-                    
-                    if poslano:
+                    if st.form_submit_button(T["btn_order"]):
                         if f_ime and f_tel and f_grad and f_adr:
                             if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, lista_za_email, suma, izabrani_jezik):
-                                st.success(T["success"])
-                                st.session_state.cart = {}
-                                st.balloons()
-                            else:
-                                st.error("Greška kod slanja maila.")
-                        else:
-                            st.warning("Popunite sva polja.")
+                                st.success(T["success"]); st.session_state.cart = {}; st.balloons()
+                            else: st.error("Greška kod slanja.")
+                        else: st.warning("Popunite sva polja.")
 
+# ==============================================================================
+# SECTION 4: ZAKLJUČANO (Horeca, Haccp, Info)
+# ==============================================================================
 elif choice == T["nav_horeca"]:
-    st.header(T["horeca_title"])
-    st.markdown(T["horeca_text"])
-
+    st.header(T["horeca_title"]); st.markdown(T["horeca_text"])
 elif choice == T["nav_haccp"]:
-    st.header(T["haccp_title"])
-    st.markdown(T["haccp_text"])
-
+    st.header(T["haccp_title"]); st.markdown(T["haccp_text"])
 elif choice == T["nav_info"]:
-    st.header(T["info_title"])
-    st.markdown(T["info_text"])
-    st.map(data={'lat': [45.485], 'lon': [16.373]})
+    st.header(T["info_title"]); st.markdown(T["info_text"]); st.map(data={'lat': [45.485], 'lon': [16.373]})
