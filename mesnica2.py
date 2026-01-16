@@ -3,7 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 
-# --- 1. KONFIGURACIJA I PRIJEVODI (ZAKLJUČANO s ispravljenom napomenom) ---
+# --- 1. KONFIGURACIJA I PRIJEVODI (ZAKLJUČANO) ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
@@ -64,7 +64,7 @@ st.markdown(f"""<style>
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 4. TRGOVINA (OTVORENO - SMART CLICK & PUNA NAPOMENA) ---
+# --- 4. TRGOVINA (STRIKTNA PROVJERA PODATAKA I PRAZNE KOŠARICE) ---
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
@@ -85,7 +85,7 @@ if choice == T["nav_shop"]:
         {"id": 13, "hr_name": "Mast", "price": 3.0, "type": "kg", "img": "https://images.unsplash.com"}
     ]
 
-    col_main, col_cart = st.columns([2, 1])
+    col_main, col_cart = st.columns()
 
     with col_main:
         inner_cols = st.columns(2)
@@ -119,11 +119,14 @@ if choice == T["nav_shop"]:
 
     with col_cart:
         st.markdown(f"### {T['cart_title']}")
+        st.info(T["note_vaga"], icon="ℹ️")
+        st.write("---")
+
         suma = 0.0
         detalji_mail = ""
         
         if not st.session_state.cart:
-            st.info(T["cart_empty"])
+            st.warning(T["cart_empty"])
         else:
             for pid, qty in list(st.session_state.cart.items()):
                 p = next(x for x in proizvodi if x["id"] == pid)
@@ -134,8 +137,6 @@ if choice == T["nav_shop"]:
             
             st.write("---")
             st.subheader(f"{T['total']}: {suma:.2f} €")
-            # PRIKAZ PUNE NAPOMENE
-            st.markdown(T["note_vaga"], unsafe_allow_html=True)
 
             with st.expander("📍 PODACI ZA DOSTAVU", expanded=True):
                 with st.form("final_order"):
@@ -145,12 +146,17 @@ if choice == T["nav_shop"]:
                     f_grad = st.text_input(T["form_city"])
                     f_ptt = st.text_input(T["form_zip"])
                     f_adr = st.text_input(T["form_addr"])
-                    if st.form_submit_button(T["btn_order"]):
-                        if f_ime and f_tel and f_grad and f_adr:
+                    
+                    poslano = st.form_submit_button(T["btn_order"])
+                    if poslano:
+                        # STRIKTNA PROVJERA SVIH POLJA
+                        if f_ime and f_tel and f_cty and f_grad and f_ptt and f_adr:
                             if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, detalji_mail, suma, "HR 🇭🇷", f_cty, f_ptt):
-                                st.success(T["success"]); st.session_state.cart = {}; st.balloons()
-                            else: st.error("Greška pri slanju.")
-                        else: st.warning("Popunite obavezna polja.")
+                                st.success(T["success"]); st.session_state.cart = {}; st.balloons(); st.rerun()
+                            else: 
+                                st.error("Greška pri slanju. Provjerite internetsku vezu.")
+                        else: 
+                            st.error("NARUDŽBA ODBIJENA: Molimo popunite sva polja označena sa (*) kako bismo znali kamo dostaviti paket.")
 
 # --- 5. OSTALE RUBRIKE (ZAKLJUČANO) ---
 elif choice == T["nav_horeca"]:
