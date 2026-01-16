@@ -3,34 +3,23 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 
-# --- 1. KONFIGURACIJA ---
+# --- 1. KONFIGURACIJA (ZAKLJUČANO) ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
-# --- 2. PRIJEVODI I TEKSTOVI (LANG_MAP) ---
+# --- 2. TEKSTOVI I PRIJEVODI (ZAKLJUČANO) ---
 LANG_MAP = {
     "HR 🇭🇷": {
-        "nav_shop": "🛍️ TRGOVINA", 
-        "nav_horeca": "🏢 ZA UGOSTITELJE", 
-        "nav_haccp": "🧼 HACCP", 
-        "nav_info": "ℹ️ O NAMA",
-        "title_sub": "MESNICA I PRERADA MESA | 2026.", 
-        "cart_title": "🛒 Vaša Košarica",
+        "nav_shop": "🛍️ TRGOVINA", "nav_horeca": "🏢 ZA UGOSTITELJE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ O NAMA",
+        "title_sub": "MESNICA I PRERADA MESA | 2026.", "cart_title": "🛒 Vaša Košarica",
         "cart_empty": "Vaša košarica je prazna.", 
         "note_vaga": "ℹ️ **Napomena:** Navedene cijene proizvoda su točne, dok je ukupni iznos u košarici informativan. Točan iznos bit će poznat nakon vaganja proizvoda. Konačan iznos znat ćete prilikom isporuke paketa, a mi ćemo se truditi da količine i informativni iznos budu što približniji stvarnom iznosu.",
-        "total": "Približno", 
-        "form_name": "Ime i Prezime*", 
-        "form_tel": "Broj telefona*",
-        "form_city": "Grad*", 
-        "form_zip": "Poštanski broj*", 
-        "form_addr": "Ulica i kućni broj*",
-        "form_country": "Država*", 
-        "btn_order": "✅ POTVRDI NARUDŽBU", 
-        "success": "Zaprimljeno! Hvala vam.",
-        "unit_kg": "kg", 
-        "unit_pc": "kom",
+        "total": "Približno", "form_name": "Ime i Prezime*", "form_tel": "Broj telefona*",
+        "form_city": "Grad*", "form_zip": "Poštanski broj*", "form_addr": "Ulica i kućni broj*",
+        "form_country": "Država*", "btn_order": "✅ POTVRDI NARUDŽBU", "success": "Zaprimljeno! Hvala vam.",
+        "unit_kg": "kg", "unit_pc": "kom",
         "horeca_title": "Profesionalna usluga za restorane i hotele",
         "horeca_text": "Mesnica i prerada mesa Kojundžić nudi posebne pogodnosti:\n* **Uslužna proizvodnja:** Izrada po vašim recepturama.\n* **Veleprodajne cijene:** Za redovne isporuke.\n* **Dostava:** Vlastitim vozilima.",
         "horeca_mail": "Ostale informacije dostupne su putem e-mail adrese:",
@@ -43,7 +32,7 @@ LANG_MAP = {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FOR RESTAURANTS", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ABOUT US",
         "title_sub": "BUTCHER SHOP & MEAT PROCESSING | 2026.", "cart_title": "🛒 Your Cart",
         "cart_empty": "Your cart is empty.", 
-        "note_vaga": "Note: Prices are accurate, but the total is informative. Final price will be known after weighing.",
+        "note_vaga": "Note: Prices are accurate, final price after weighing.",
         "total": "Approx.", "form_name": "Name*", "form_tel": "Phone*",
         "form_city": "City*", "form_zip": "ZIP*", "form_addr": "Address*",
         "form_country": "Country*", "btn_order": "✅ CONFIRM ORDER", "success": "Received!",
@@ -69,21 +58,19 @@ LANG_MAP = {
 
 st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 
-# --- 3. FUNKCIJA ZA EMAIL ---
+# --- 3. FUNKCIJA ZA EMAIL (ZAKLJUČANO) ---
 def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt):
     predmet = f"🥩 NOVA NARUDŽBA 2026: {ime}"
     tijelo = f"Kupac: {ime}\nTel: {telefon}\nDržava: {country}\nGrad: {ptt} {grad}\nAdresa: {adr}\nJezik: {jezik}\n\nArtikli:\n{detalji}\n\nUkupno cca: {ukupno} €"
     msg = MIMEText(tijelo); msg['Subject'] = predmet; msg['From'] = MOJ_EMAIL; msg['To'] = MOJ_EMAIL
     try:
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()
-        server.login(MOJ_EMAIL, MOJA_LOZINKA)
-        server.sendmail(MOJ_EMAIL, MOJ_EMAIL, msg.as_string())
-        server.quit()
+        server.starttls(); server.login(MOJ_EMAIL, MOJA_LOZINKA)
+        server.sendmail(MOJ_EMAIL, MOJ_EMAIL, msg.as_string()); server.quit()
         return True
     except: return False
 
-# --- 4. CSS ---
+# --- 4. DIZAJN (ZAKLJUČANO) ---
 st.markdown("""<style>
     .brand-name { color: #8B0000; font-size: 50px; font-weight: 900; text-align: center; margin:0; }
     .brand-sub { color: #333; font-size: 18px; text-align: center; margin-bottom: 25px; }
@@ -94,16 +81,17 @@ st.markdown("""<style>
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 5. NAVIGACIJA ---
+# --- 5. NAVIGACIJA (ZAKLJUČANO) ---
 izabrani_jezik = st.sidebar.selectbox("Language / Jezik / Sprache", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
 choice = st.sidebar.radio("Meni", [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]])
 
-# --- TRGOVINA ---
+# --- TRGOVINA (SADRŽAJ SE MOŽE MIJENJATI) ---
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
 
+    # Ovdje mijenjate proizvode:
     proizvodi = [
         {"id": 1, "name": "Dimljeni hamburger", "price": 12.0, "type": "kg"},
         {"id": 2, "name": "Dimljeni buncek", "price": 8.0, "type": "pc"},
@@ -135,56 +123,37 @@ if choice == T["nav_shop"]:
                 st.session_state.cart[p['id']] = qty + (0.5 if p['type'] == 'kg' else 1)
                 st.rerun()
 
-    # --- KOŠARICA U SIDEBARU ---
+    # --- KOŠARICA I FORMA (ZAKLJUČANO) ---
     st.sidebar.markdown("---")
     st.sidebar.subheader(T["cart_title"])
     if not st.session_state.cart:
         st.sidebar.info(T["cart_empty"])
     else:
-        total = 0.0
-        txt = ""
+        total = 0.0; txt = ""
         for pid, q in st.session_state.cart.items():
             p = next(x for x in proizvodi if x['id'] == pid)
-            sub = q * p['price']
-            total += sub
+            sub = q * p['price']; total += sub
             st.sidebar.write(f"**{p['name']}** ({q} {T['unit_kg'] if p['type']=='kg' else T['unit_pc']})")
             txt += f"- {p['name']}: {q} {p['type']} ({sub:.2f}€)\n"
-        
         st.sidebar.markdown(f"### {T['total']}: {total:.2f} €")
         st.sidebar.info(T["note_vaga"])
-        
         with st.sidebar.form("order_form"):
-            f_name = st.text_input(T["form_name"])
-            f_tel = st.text_input(T["form_tel"])
-            f_country = st.text_input(T["form_country"])
-            f_city = st.text_input(T["form_city"])
-            f_ptt = st.text_input(T["form_zip"])
-            f_addr = st.text_input(T["form_addr"])
+            f_name = st.text_input(T["form_name"]); f_tel = st.text_input(T["form_tel"])
+            f_country = st.text_input(T["form_country"]); f_city = st.text_input(T["form_city"])
+            f_ptt = st.text_input(T["form_zip"]); f_addr = st.text_input(T["form_addr"])
             if st.form_submit_button(T["btn_order"]):
                 if f_name and f_tel and f_city and f_addr:
                     if posalji_email(f_name, f_tel, f_city, f_addr, txt, total, izabrani_jezik, f_country, f_ptt):
-                        st.sidebar.success(T["success"])
-                        st.session_state.cart = {}
-                        time.sleep(2)
-                        st.rerun()
+                        st.sidebar.success(T["success"]); st.session_state.cart = {}
+                        time.sleep(2); st.rerun()
                 else: st.sidebar.error("❌ Ispunite sva polja sa *")
 
-# --- UGOSTITELJI ---
+# --- OSTALE RUBRIKE (ZAKLJUČANO) ---
 elif choice == T["nav_horeca"]:
-    st.title(T["horeca_title"])
-    st.write(T["horeca_text"])
-    st.markdown("---")
-    st.info(f"📧 **{T['horeca_mail']}** {MOJ_EMAIL}")
-
-# --- HACCP ---
+    st.title(T["horeca_title"]); st.write(T["horeca_text"])
+    st.markdown("---"); st.info(f"📧 **{T['horeca_mail']}** {MOJ_EMAIL}")
 elif choice == T["nav_haccp"]:
-    st.title(T["haccp_title"])
-    st.success(T["haccp_text"])
-
-# --- O NAMA ---
+    st.title(T["haccp_title"]); st.success(T["haccp_text"])
 elif choice == T["nav_info"]:
-    st.title(T["info_title"])
-    st.write(T["info_text"])
-    st.markdown("---")
-    st.markdown(f"📍 **Lokacija:** Sisak, Hrvatska")
-    st.markdown(f"📧 **Email:** {MOJ_EMAIL}")
+    st.title(T["info_title"]); st.write(T["info_text"])
+    st.markdown("---"); st.markdown(f"📍 **Lokacija:** Sisak, Hrvatska\n\n📧 **Email:** {MOJ_EMAIL}")
