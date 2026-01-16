@@ -3,13 +3,13 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 
-# --- 1. KONFIGURACIJA ---
+# --- 1. KONFIGURACIJA (ZAKLJUČANO) ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
-# --- 2. PRIJEVODI ---
+# --- 2. PRIJEVODI (UKLJUČENI ARTIKLI) ---
 LANG_MAP = {
     "HR 🇭🇷": {
         "nav_shop": "🛍️ TRGOVINA", "nav_horeca": "🏢 ZA UGOSTITELJE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ O NAMA",
@@ -26,50 +26,54 @@ LANG_MAP = {
         "haccp_title": "HACCP Standardi i Sigurnost",
         "haccp_text": "Naša proizvodnja u 2026. odvija se pod najstrožim sanitarnim uvjetima.",
         "info_title": "Obiteljska tradicija i kvaliteta",
-        "info_text": "Meso se priprema na tradicionalan način u modernom pogonu te se dimi isključivo izabranim drvetom.",
-        "shipping_data": "Podaci za dostavu:"
+        "info_text": "Smješteni u srcu Siska, ponosni smo na dugogodišnje iskustvo. Naša se stoka kupuje isključivo na farmama malih proizvođača iz okolice Siska (Park prirode Lonjsko polje, Banovina, Posavina). Meso se priprema na tradicionalan način u modernom pogonu te se dimi isključivo izabranim drvetom kako bismo osigurali vrhunsku aromu i kvalitetu.",
+        "shipping_data": "Podaci za dostavu:",
+        "p1": "Dimljeni hamburger", "p2": "Dimljeni buncek", "p3": "Dimljeni prsni vršci", 
+        "p4": "Slavonska kobasica", "p5": "Domaća salama", "p6": "Dimljene kosti", 
+        "p7": "Dimljene nogice mix", "p8": "Panceta", "p9": "Dimljeni vrat (BK)", 
+        "p10": "Dimljeni kremenadl (BK)", "p11": "Dimljena pečenica", "p12": "Čvarci"
     },
     "EN 🇬🇧": {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 B2B SERVICE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ABOUT US",
         "title_sub": "BUTCHER SHOP & MEAT PROCESSING | 2026.", "cart_title": "🛒 Your Cart",
         "cart_empty": "Your cart is empty.", 
-        "note_vaga": "ℹ️ **Note:** Prices are accurate, final weight confirms the price.",
-        "total": "Approx.", "form_name": "Full Name*", "form_tel": "Phone Number*",
-        "form_city": "City*", "form_zip": "ZIP Code*", "form_addr": "Address*",
-        "form_country": "Country*", "btn_order": "✅ CONFIRM ORDER", "success": "Received! Thank you.",
+        "note_vaga": "ℹ️ **Note:** Final price confirmed after weighing.",
+        "total": "Approx.", "form_name": "Full Name*", "form_tel": "Phone*",
+        "form_city": "City*", "form_zip": "ZIP*", "form_addr": "Address*",
+        "form_country": "Country*", "btn_order": "✅ CONFIRM ORDER", "success": "Thank you!",
         "unit_kg": "kg", "unit_pc": "pcs",
-        "horeca_title": "Professional service for restaurants",
-        "horeca_text": "Kojundžić Meat Processing offers custom production and wholesale prices.",
-        "horeca_mail": "Further information via email:",
-        "haccp_title": "HACCP Standards",
-        "haccp_text": "Production in 2026 follows strict sanitary conditions.",
-        "info_title": "Tradition and Quality",
-        "info_text": "Traditional meat preparation, smoked with selected wood.",
-        "shipping_data": "Shipping details:"
+        "horeca_title": "B2B Service", "horeca_text": "Custom production and wholesale prices.",
+        "horeca_mail": "Info via email:", "haccp_title": "HACCP", "haccp_text": "Strict safety standards 2026.",
+        "info_title": "Tradition", "info_text": "Located in Sisak, traditional meat processing in modern facility.",
+        "shipping_data": "Shipping info:",
+        "p1": "Smoked hamburger bacon", "p2": "Smoked pork hock", "p3": "Smoked brisket tips",
+        "p4": "Slavonian sausage", "p5": "Homemade salami", "p6": "Smoked bones",
+        "p7": "Smoked pork feet mix", "p8": "Pancetta", "p9": "Smoked neck (Boneless)",
+        "p10": "Smoked loin (Boneless)", "p11": "Smoked tenderloin", "p12": "Pork rinds"
     },
     "DE 🇩🇪": {
         "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 GASTRONOMIE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ÜBER UNS",
         "title_sub": "METZGEREI & FLEISCHVERARBEITUNG | 2026.", "cart_title": "🛒 Warenkorb",
         "cart_empty": "Ihr Warenkorb ist leer.", 
         "note_vaga": "ℹ️ **Hinweis:** Endpreis nach dem Wiegen.",
-        "total": "Gesamt ca.", "form_name": "Name*", "form_tel": "Telefonnummer*",
+        "total": "Gesamt ca.", "form_name": "Name*", "form_tel": "Telefon*",
         "form_city": "Stadt*", "form_zip": "PLZ*", "form_addr": "Adresse*",
         "form_country": "Land*", "btn_order": "✅ BESTELLUNG BESTÄTIGEN", "success": "Vielen Dank!",
         "unit_kg": "kg", "unit_pc": "Stk",
-        "horeca_title": "Service für Gastronomie",
-        "horeca_text": "Metzgerei Kojundžić bietet Lohnfertigung und Großhandelspreise.",
-        "horeca_mail": "Weitere Infos per E-Mail:",
-        "haccp_title": "HACCP Standards",
-        "haccp_text": "Produktion 2026 nach strengsten Hygienerichtlinien.",
-        "info_title": "Tradition und Qualität",
-        "info_text": "Traditionelle Zubereitung, geräuchert mit ausgewähltem Holz.",
-        "shipping_data": "Versanddetails:"
+        "horeca_title": "Gastronomie", "horeca_text": "Lohnfertigung und Großhandelspreise.",
+        "horeca_mail": "Infos per E-Mail:", "haccp_title": "HACCP", "haccp_text": "Produktion 2026.",
+        "info_title": "Tradition", "info_text": "In Sisak ansässig, traditionelle Zubereitung in modernem Betrieb.",
+        "shipping_data": "Versanddetails:",
+        "p1": "Geräucherter Hamburger", "p2": "Geräucherte Stelze", "p3": "Geräucherte Brustspitzen",
+        "p4": "Slawonische Wurst", "p5": "Hausgemachte Salami", "p6": "Geräucherte Knochen",
+        "p7": "Geräucherte Füße Mix", "p8": "Pancetta", "p9": "Geräucherter Nacken (o.K.)",
+        "p10": "Geräuchertes Karree (o.K.)", "p11": "Geräucherte Lende", "p12": "Grieben"
     }
 }
 
 st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 
-# --- 3. FUNKCIJA ZA EMAIL ---
+# --- 3. FUNKCIJA ZA EMAIL (ZAKLJUČANO) ---
 def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt):
     predmet = f"🥩 NOVA NARUDŽBA 2026: {ime}"
     tijelo = f"Kupac: {ime}\nTel: {telefon}\nZemlja: {country}\nLokacija: {ptt} {grad}\nAdresa: {adr}\nJezik: {jezik}\n\nArtikli:\n{detalji}\n\nUkupno: {ukupno} €"
@@ -81,15 +85,15 @@ def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt)
         return True
     except: return False
 
-# --- 4. DIZAJN (Smanjeno za 30%) ---
+# --- 4. DIZAJN (SMANJENO ZA 30%) ---
 st.markdown("""<style>
     .brand-name { color: #8B0000; font-size: 35px; font-weight: 900; text-align: center; margin:0; }
     .brand-sub { color: #333; font-size: 14px; text-align: center; margin-bottom: 15px; }
-    .product-card { background: white; border-radius: 8px; padding: 10px; border: 1px solid #eee; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 5px; }
-    .product-card h4 { font-size: 14px; margin: 4px 0; }
-    .product-card p { font-size: 13px; color: #8B0000; font-weight: bold; }
-    .qty-display { font-size: 15px; font-weight: bold; color: #8B0000; text-align: center; }
-    .stButton>button { height: 26px; line-height: 26px; padding: 0 8px; font-size: 11px; }
+    .product-card { background: white; border-radius: 8px; padding: 8px; border: 1px solid #eee; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 5px; }
+    .product-card h4 { font-size: 13px; margin: 3px 0; }
+    .product-card p { font-size: 12px; color: #8B0000; font-weight: bold; }
+    .qty-display { font-size: 14px; font-weight: bold; color: #8B0000; text-align: center; }
+    .stButton>button { height: 24px; line-height: 24px; padding: 0 6px; font-size: 10px; }
 </style>""", unsafe_allow_html=True)
 
 if "cart" not in st.session_state:
@@ -109,18 +113,18 @@ if choice == T["nav_shop"]:
 
     with col_proizvodi:
         proizvodi = [
-            {"id": 1, "name": "Dimljeni hamburger", "price": 12.0, "type": "kg"},
-            {"id": 2, "name": "Dimljeni buncek", "price": 8.0, "type": "pc"},
-            {"id": 3, "name": "Dimljeni prsni vršci", "price": 9.0, "type": "pc"},
-            {"id": 4, "name": "Slavonska kobasica", "price": 16.0, "type": "kg"},
-            {"id": 5, "name": "Domaća salama", "price": 25.0, "type": "kg"},
-            {"id": 6, "name": "Dimljene kosti", "price": 2.5, "type": "kg"},
-            {"id": 7, "name": "Dimljene nogice mix", "price": 2.5, "type": "kg"},
-            {"id": 8, "name": "Panceta", "price": 17.0, "type": "kg"},
-            {"id": 9, "name": "Dimljeni vrat (BK)", "price": 15.0, "type": "kg"},
-            {"id": 10, "name": "Dimljeni kremenadl (BK)", "price": 15.0, "type": "kg"},
-            {"id": 11, "name": "Dimljena pečenica", "price": 20.0, "type": "kg"},
-            {"id": 12, "name": "Čvarci", "price": 10.0, "type": "pc"},
+            {"id": 1, "name": T["p1"], "price": 12.0, "type": "kg"},
+            {"id": 2, "name": T["p2"], "price": 8.0, "type": "pc"},
+            {"id": 3, "name": T["p3"], "price": 9.0, "type": "pc"},
+            {"id": 4, "name": T["p4"], "price": 16.0, "type": "kg"},
+            {"id": 5, "name": T["p5"], "price": 25.0, "type": "kg"},
+            {"id": 6, "name": T["p6"], "price": 2.5, "type": "kg"},
+            {"id": 7, "name": T["p7"], "price": 2.5, "type": "kg"},
+            {"id": 8, "name": T["p8"], "price": 17.0, "type": "kg"},
+            {"id": 9, "name": T["p9"], "price": 15.0, "type": "kg"},
+            {"id": 10, "name": T["p10"], "price": 15.0, "type": "kg"},
+            {"id": 11, "name": T["p11"], "price": 20.0, "type": "kg"},
+            {"id": 12, "name": T["p12"], "price": 10.0, "type": "pc"},
         ]
 
         sub_cols = st.columns(3)
@@ -157,12 +161,9 @@ if choice == T["nav_shop"]:
         st.info(T["note_vaga"])
         with st.form("order_form"):
             st.markdown(f"##### {T['shipping_data']}")
-            f_name = st.text_input(T["form_name"])
-            f_tel = st.text_input(T["form_tel"])
-            f_country = st.text_input(T["form_country"])
-            f_city = st.text_input(T["form_city"])
-            f_ptt = st.text_input(T["form_zip"])
-            f_addr = st.text_input(T["form_addr"])
+            f_name = st.text_input(T["form_name"]); f_tel = st.text_input(T["form_tel"])
+            f_country = st.text_input(T["form_country"]); f_city = st.text_input(T["form_city"])
+            f_ptt = st.text_input(T["form_zip"]); f_addr = st.text_input(T["form_addr"])
             if st.form_submit_button(T["btn_order"]):
                 if not st.session_state.cart: st.error("Empty cart.")
                 elif f_name and f_tel and f_city and f_addr:
