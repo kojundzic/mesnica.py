@@ -20,7 +20,29 @@ LANG_MAP = {
         "total": "Približno", "form_name": "Ime i Prezime*", "form_tel": "Broj telefona*",
         "form_city": "Grad*", "form_zip": "Poštanski broj*", "form_addr": "Ulica i kućni broj*",
         "form_country": "Država*", "btn_order": "✅ POTVRDI NARUDŽBU", "success": "Zaprimljeno! Hvala vam.",
-        "unit_kg": "kg", "unit_pc": "kom"
+        "unit_kg": "kg", "unit_pc": "kom",
+        "horeca_title": "Profesionalna usluga za restorane i hotele",
+        "horeca_text": "Mesnica i prerada mesa Kojundžić nudi posebne pogodnosti za ugostiteljske objekte:\n* **Uslužna proizvodnja:** Izrada suhomesnatih proizvoda prema vašim recepturama.\n* **Veleprodajne cijene:** Konkurentne cijene prilagođene redovnim isporukama.\n* **Kvaliteta:** Strogo kontrolirano domaće porijeklo.\n* **Dostava:** Na veće količine dostava vlastitim vozilima.",
+        "haccp_title": "HACCP Standardi i Sigurnost",
+        "haccp_text": "Naša proizvodnja odvija se pod najstrožim sanitarnim uvjetima:\n1. **Sljedivost:** Jasno vidljivo porijeklo svakog komada.\n2. **Sigurnost:** HACCP sustav prati svaki korak.\n3. **Higijena:** Spoj tradicije i najsuvremenijih standarda.",
+        "info_title": "Obiteljska tradicija i kvaliteta",
+        "info_text": "Smješteni u srcu Siska, ponosni smo na dugogodišnje iskustvo. Naša se stoka kupuje isključivo na farmama malih proizvođača iz okolice Siska:\n* **Park prirode Lonjsko polje**\n* **Banovina**\n* **Posavina**"
+    },
+    "EN 🇬🇧": {
+        "nav_shop": "🛍️ SHOP", "nav_horeca": "🏢 FOR RESTAURANTS", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ ABOUT US",
+        "title_sub": "BUTCHER SHOP & MEAT PROCESSING | 2026.", "cart_title": "🛒 Your Cart",
+        "cart_empty": "Empty. Add items.", 
+        "note_vaga": "Note: Prices are accurate, but the cart total is informative. Final weight confirms the price.",
+        "total": "Approx.", "form_name": "Full Name*", "form_tel": "Phone*",
+        "form_city": "City*", "form_zip": "ZIP*", "form_addr": "Address*",
+        "form_country": "Country*", "btn_order": "✅ CONFIRM ORDER", "success": "Received! Thank you.",
+        "unit_kg": "kg", "unit_pc": "pcs",
+        "horeca_title": "Professional service for restaurants",
+        "horeca_text": "Special benefits for catering facilities...",
+        "haccp_title": "HACCP Standards",
+        "haccp_text": "Production under strict sanitary conditions.",
+        "info_title": "Tradition",
+        "info_text": "Located in Sisak..."
     }
 }
 
@@ -38,35 +60,27 @@ def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_ko
         return True
     except: return False
 
-# --- 3. DIZAJN I NAVIGACIJA (ZAKLJUČANO) ---
-izabrani_jezik = "HR 🇭🇷" # Fiksirano na HR prema zahtjevu
+# --- 3. DIZAJN I DINAMIČKA NAVIGACIJA (ISPRAVLJENO) ---
+izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
 
-st.sidebar.markdown(f"### {izabrani_jezik}")
 menu = [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]]
-choice = st.sidebar.radio("Navigacija", menu, label_visibility="collapsed")
+choice = st.sidebar.radio("Navigacija", menu)
 
 st.markdown(f"""<style>
     .brand-name {{ color: #8B0000; font-size: 55px; font-weight: 900; text-align: center; text-transform: uppercase; margin:0; }}
     .brand-sub {{ color: #333; font-size: 18px; text-align: center; font-weight: 600; margin-bottom: 25px; }}
     .product-card {{ background: white; border-radius: 12px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }}
     .product-img {{ border-radius: 8px; width: 100%; height: 180px; object-fit: cover; margin-bottom: 10px; }}
-    .stButton>button {{ 
-        background-color: white !important; 
-        color: #8B0000 !important; 
-        border: 1px solid #8B0000 !important; 
-        border-radius: 10px !important;
-        width: 100%;
-        transition: 0.2s;
-    }}
+    .stButton>button {{ background-color: white !important; color: #8B0000 !important; border: 1px solid #8B0000 !important; border-radius: 10px !important; width: 100%; }}
     .stButton>button:hover {{ background-color: #8B0000 !important; color: white !important; }}
-    .qty-display {{ font-size: 22px; font-weight: 900; color: #4a0000; text-align: center; padding-top: 5px; margin:0; }}
+    .qty-display {{ font-size: 22px; font-weight: 900; color: #4a0000; text-align: center; margin:0; }}
 </style>""", unsafe_allow_html=True)
 
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 4. TRGOVINA (TESTIRANO I ISPRAVLJENO) ---
+# --- 4. RUBRIKA TRGOVINA ---
 if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
@@ -95,12 +109,12 @@ if choice == T["nav_shop"]:
             with inner_cols[i % 2]:
                 st.markdown(f"""<div class="product-card">
                     <img src="{p['img']}" class="product-img">
-                    <h3 style="margin:0;">{p['hr_name']}</h3>
-                    <p style="color:#666; font-weight: bold; font-size:18px;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
+                    <h3>{p['hr_name']}</h3>
+                    <p style="font-weight: bold; font-size:18px;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
                 </div>""", unsafe_allow_html=True)
                 
                 trenutna = st.session_state.cart.get(p['id'], 0.0)
-                c1, c2, c3 = st.columns([1, 1, 1])
+                c1, c2, c3 = st.columns(3)
                 
                 if c1.button("−", key=f"min_{p['id']}"):
                     if trenutna > 0:
@@ -121,13 +135,10 @@ if choice == T["nav_shop"]:
 
     with col_cart:
         st.markdown(f"### {T['cart_title']}")
-        # NAPOMENA: UVIJEK VIDLJIVA
         st.info(T["note_vaga"], icon="ℹ️")
         st.write("---")
-
         suma = 0.0
         detalji_mail = ""
-        
         if not st.session_state.cart:
             st.warning(T["cart_empty"])
         else:
@@ -140,7 +151,6 @@ if choice == T["nav_shop"]:
             
             st.write("---")
             st.subheader(f"{T['total']}: {suma:.2f} €")
-
             with st.expander("📍 PODACI ZA DOSTAVU", expanded=True):
                 with st.form("final_order"):
                     f_ime = st.text_input(T["form_name"])
@@ -149,24 +159,23 @@ if choice == T["nav_shop"]:
                     f_grad = st.text_input(T["form_city"])
                     f_ptt = st.text_input(T["form_zip"])
                     f_adr = st.text_input(T["form_addr"])
-                    
                     if st.form_submit_button(T["btn_order"]):
-                        # STRIKTNA PROVJERA SVIH PODATAKA
                         if f_ime and f_tel and f_cty and f_grad and f_ptt and f_adr:
-                            if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, detalji_mail, suma, "HR 🇭🇷", f_cty, f_ptt):
-                                st.success(T["success"])
-                                st.session_state.cart = {}
-                                st.balloons()
-                                st.rerun()
-                            else: 
-                                st.error("Greška pri slanju.")
-                        else: 
-                            st.error("NARUDŽBA ODBIJENA: Molimo popunite SVA polja označena sa (*).")
+                            if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, detalji_mail, suma, izabrani_jezik, f_cty, f_ptt):
+                                st.success(T["success"]); st.session_state.cart = {}; st.balloons(); st.rerun()
+                            else: st.error("Greška pri slanju.")
+                        else: st.error("Molimo ispunite SVA polja označena sa (*).")
 
-# --- 5. OSTALE RUBRIKE (ZAKLJUČANO) ---
+# --- 5. OSTALE RUBRIKE (ISPRAVLJENO) ---
 elif choice == T["nav_horeca"]:
-    st.header(T["horeca_title"]); st.markdown(T["horeca_text"])
+    st.header(T["horeca_title"])
+    st.markdown(T["horeca_text"])
+
 elif choice == T["nav_haccp"]:
-    st.header(T["haccp_title"]); st.markdown(T["haccp_text"])
+    st.header(T["haccp_title"])
+    st.markdown(T["haccp_text"])
+
 elif choice == T["nav_info"]:
-    st.header(T["info_title"]); st.markdown(T["info_text"]); st.map(data={'lat': [45.485], 'lon': [16.373]})
+    st.header(T["info_title"])
+    st.markdown(T["info_text"])
+    st.map(data={'lat': [45.485], 'lon': [16.373]})
