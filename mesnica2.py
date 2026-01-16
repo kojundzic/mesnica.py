@@ -3,13 +3,13 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 
-# --- 1. KONFIGURACIJA (TRAJNO ZAKLJUČANO) ---
+# --- 1. KONFIGURACIJA (ZAKLJUČANO) ---
 MOJ_EMAIL = "tomislavtomi90@gmail.com"
 MOJA_LOZINKA = "czdx ndpg owzy wgqu" 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
-# --- 2. PRIJEVODI I ARTIKLI (TRAJNO ZAKLJUČANO) ---
+# --- 2. PRIJEVODI I ARTIKLI (ZAKLJUČANO) ---
 LANG_MAP = {
     "HR 🇭🇷": {
         "nav_shop": "🛍️ TRGOVINA", "nav_horeca": "🏢 ZA UGOSTITELJE", "nav_haccp": "🧼 HACCP", "nav_info": "ℹ️ O NAMA",
@@ -48,7 +48,7 @@ LANG_MAP = {
         "shipping_data": "Shipping info:",
         "p1": "Smoked bacon", "p2": "Smoked pork hock", "p3": "Smoked brisket tips",
         "p4": "Slavonian sausage", "p5": "Homemade salami", "p6": "Smoked bones",
-        "p7": "Smoked pork feet", "p8": "Pancetta", "p9": "Smoked neck",
+        "p7": "Smoked feet mix", "p8": "Pancetta", "p9": "Smoked neck",
         "p10": "Smoked loin", "p11": "Smoked tenderloin", "p12": "Pork rinds"
     },
     "DE 🇩🇪": {
@@ -66,14 +66,14 @@ LANG_MAP = {
         "shipping_data": "Versanddetails:",
         "p1": "Geräucherter Hamburger", "p2": "Geräucherte Stelze", "p3": "Geräucherte Brustspitzen",
         "p4": "Slawonische Wurst", "p5": "Hausgemachte Salami", "p6": "Geräucherte Knochen",
-        "p7": "Geräucherte Füße", "p8": "Pancetta", "p9": "Geräucherter Nacken",
-        "p10": "Geräuchertes Karree", "p11": "Geräucherte Lende", "p12": "Grieben"
+        "p7": "Geräucherte Füße Mix", "p8": "Pancetta", "p9": "Geräucherter Nacken (o.K.)",
+        "p10": "Geräuchertes Karree (o.K.)", "p11": "Geräucherte Lende", "p12": "Grieben"
     }
 }
 
 st.set_page_config(page_title="Kojundžić | 2026", page_icon="🥩", layout="wide")
 
-# --- 3. FUNKCIJA ZA EMAIL (TRAJNO ZAKLJUČANO) ---
+# --- 3. FUNKCIJA ZA EMAIL (ZAKLJUČANO) ---
 def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt):
     predmet = f"🥩 NOVA NARUDŽBA 2026: {ime}"
     tijelo = f"Kupac: {ime}\nTel: {telefon}\nZemlja: {country}\nLokacija: {ptt} {grad}\nAdresa: {adr}\nJezik: {jezik}\n\nArtikli:\n{detalji}\n\nUkupno: {ukupno} €"
@@ -85,7 +85,7 @@ def posalji_email(ime, telefon, grad, adr, detalji, ukupno, jezik, country, ptt)
         return True
     except: return False
 
-# --- 4. DIZAJN (SMANJENO ZA 30% - TRAJNO ZAKLJUČANO) ---
+# --- 4. DIZAJN (SMANJENO ZA 30% - ZAKLJUČANO) ---
 st.markdown("""<style>
     .brand-name { color: #8B0000; font-size: 35px; font-weight: 900; text-align: center; margin:0; }
     .brand-sub { color: #333; font-size: 14px; text-align: center; margin-bottom: 15px; }
@@ -132,19 +132,21 @@ if choice == T["nav_shop"]:
             with sub_cols[idx % 3]:
                 st.markdown(f'<div class="product-card"><h4>{p["name"]}</h4><p>{p["price"]:.2f} €</p></div>', unsafe_allow_html=True)
                 c1, c2, c3 = st.columns(3)
+                
+                # MINUS
                 if c1.button("➖", key=f"m_{p['id']}"):
                     if p['id'] in st.session_state.cart:
                         st.session_state.cart[p['id']] -= (0.5 if p['type'] == 'kg' else 1)
                         if st.session_state.cart[p['id']] <= 0: del st.session_state.cart[p['id']]
                         st.rerun()
                 
-                # JEDINICA MJERE UZ BROJ
+                # PRIKAZ (Broj + Jedinica)
                 qty = st.session_state.cart.get(p['id'], 0.0)
                 display_qty = int(qty) if qty == int(qty) else qty
-                mjerna_jedinica = T["unit_kg"] if p['type'] == "kg" else T["unit_pc"]
+                jedinica = T["unit_kg"] if p['type'] == "kg" else T["unit_pc"]
+                c2.markdown(f'<p class="qty-display">{display_qty} {jedinica}</p>', unsafe_allow_html=True)
                 
-                c2.markdown(f'<p class="qty-display">{display_qty} {mjerna_jedinica}</p>', unsafe_allow_html=True)
-                
+                # PLUS (0 -> 1 -> +0.5 za kg)
                 if c3.button("➕", key=f"p_{p['id']}"):
                     if p['id'] not in st.session_state.cart: st.session_state.cart[p['id']] = 1.0
                     else: st.session_state.cart[p['id']] += (0.5 if p['type'] == 'kg' else 1)
@@ -158,7 +160,8 @@ if choice == T["nav_shop"]:
             for pid, q in st.session_state.cart.items():
                 p = next(x for x in proizvodi if x['id'] == pid)
                 sub = q * p['price']; total += sub
-                st.write(f"✅ {p['name']}: {q}{T['unit_kg'] if p['type']=='kg' else T['unit_pc']} = {sub:.2f}€")
+                txt_mjera = T["unit_kg"] if p['type']=='kg' else T["unit_pc"]
+                st.write(f"✅ {p['name']}: {q}{txt_mjera} = {sub:.2f}€")
                 txt_email += f"- {p['name']}: {q} {p['type']} ({sub:.2f}€)\n"
             st.markdown(f"### {T['total']}: {total:.2f} €")
         
@@ -170,7 +173,7 @@ if choice == T["nav_shop"]:
             f_country = st.text_input(T["form_country"]); f_city = st.text_input(T["form_city"])
             f_ptt = st.text_input(T["form_zip"]); f_addr = st.text_input(T["form_addr"])
             if st.form_submit_button(T["btn_order"]):
-                if not st.session_state.cart: st.error("Empty cart.")
+                if not st.session_state.cart: st.error("Empty.")
                 elif f_name and f_tel and f_city and f_addr:
                     if posalji_email(f_name, f_tel, f_city, f_addr, txt_email, total, izabrani_jezik, f_country, f_ptt):
                         st.success(T["success"]); st.session_state.cart = {}; time.sleep(2); st.rerun()
