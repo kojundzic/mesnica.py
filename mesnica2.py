@@ -97,9 +97,15 @@ def prikazi_kosaricu(col):
         aktivni_artikli = {k: v for k, v in st.session_state.cart_dict.items() if v['qty'] > 0}
         
         if not aktivni_artikli:
-            st.write("Vaša košarica je prazna. Počnite dodavati artikle pomoću znaka +.")
+            st.write("Vaša košarica je trenutno prazna. Počnite dodavati artikle pomoću znaka +.")
         else:
-            st.markdown('<div class="vaga-napomena">ℹ️ Cijene su informativne i približne. Točan iznos znat će se nakon vaganja, odnosno pri primitku paketa. Prodavatelj će se truditi maksimalno pridržavati naručenih količina kako bi iznos informativne i prave cijene bio što točniji.</div>', unsafe_allow_html=True)
+            st.markdown("""
+            <div class="vaga-napomena">
+                ℹ️ <b>Napomena:</b> Navedene cijene ispod artikala su točne, dok je iznos u košarici informativan i približan. 
+                Točan iznos znat će se nakon vaganja, odnosno pri primitku paketa. 
+                Prodavatelj će se truditi maksimalno pridržavati naručenih količina kako bi iznos informativne i prave cijene bio što točniji.
+            </div>
+            """, unsafe_allow_html=True)
             
             ukupno = sum(v['price'] for v in aktivni_artikli.values())
             detalji_za_email = ""
@@ -123,9 +129,9 @@ def prikazi_kosaricu(col):
             if st.button("✅ POTVRDI NARUDŽBU"):
                 if ime and telefon and grad and ptt and adr:
                     with st.spinner('Slanje narudžbe...'):
-                        if posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_za_email, f"{ukupno:.2f}"):
+                        if posalji_email_vlasniku(ime, telefon, drzava, grad, ptt, adr, detalji_narudzbe, f"{ukupno:.2f}"):
                             st.session_state.cart_dict = {}
-                            st.success("🎉 Zaprimljeno! Točan iznos znat ćete nakon vaganja.")
+                            st.success("🎉 Zaprimljeno! Točan iznos znat ćete nakon vaganja pri primitku paketa.")
                             st.balloons()
                         else:
                             st.error("Greška kod slanja.")
@@ -156,8 +162,10 @@ if izbor == "🛍️ TRGOVINA":
                 st.markdown(f'<div class="product-card"><h3>{p["ime"]}</h3>', unsafe_allow_html=True)
                 labela = "€/kom*" if p["tip"] == 1 else "€/kg"
                 st.markdown(f'<p class="price-tag">{p["cijena"]:.2f} {labela}</p>', unsafe_allow_html=True)
+                
                 pocetna = st.session_state.cart_dict.get(p["ime"], {"qty": 0.0})["qty"]
                 step_val = 1.0 if pocetna == 0 else (1.0 if p["tip"] == 1 else 0.5)
+                
                 qty = st.number_input(f"Količina {p['ime']}", min_value=0.0, step=step_val, value=float(pocetna), key=f"inp_{p['id']}", label_visibility="collapsed")
                 st.session_state.cart_dict[p["ime"]] = {"qty": qty, "price": qty * p["cijena"], "is_komad": p["tip"] == 1}
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -180,7 +188,7 @@ elif izbor == "🏢 ZA UGOSTITELJE":
         </p>
         <hr>
         <p style="font-size: 20px; font-weight: bold; color: #8B0000;">
-            Sve se možemo dogovoriti – javite nam se s povjerenjem:
+            Javite nam se s povjerenjem:
         </p>
         <ul style="font-size: 18px; list-style-type: none; padding-left: 0;">
             <li>📞 <b>Mobitel:</b> +385 91 XXX XXXX (Tomislav)</li>
@@ -189,20 +197,18 @@ elif izbor == "🏢 ZA UGOSTITELJE":
         </ul>
     </div>
     """, unsafe_allow_html=True)
-    
-    st.info("💡 Kontaktirajte nas za personaliziranu ponudu i uvjete uslužne prerade vaših sirovina.")
 
 elif izbor == "🧼 HACCP":
     st.title("🧼 HACCP Sigurnost")
     st.success("✅ ODOBRENI OBJEKT BR. 2686")
+    st.write("Svi proizvodi prolaze strogu kontrolu kvalitete i sljedivosti.")
 
 elif izbor == "ℹ️ O NAMA":
-    st.title("ℹ️ O Mesnici Kojundžić")
+    st.title("ℹ️ Kontakt")
     st.write(f"📍 **Adresa:** Trg Josipa Mađerića 1, Sisak")
     st.write(f"📧 **Email:** {MOJ_EMAIL}")
-    st.info("Tradicija, kvaliteta i domaći okus su naši temelji od 1990-ih.")
 
 # --- FOOTER ---
 st.write("---")
-st.markdown('<p style="text-align: center; color: #777; font-size: 13px;">Cijene su informativne. Prodavatelj će se truditi maksimalno pridržavati naručenih količina kako bi iznos informativne i prave cijene bio što točniji. Točan iznos znat će se nakon vaganja pri primitku paketa.</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; color: #777; font-size: 13px;">Navedene cijene ispod artikala su točne. Iznos u košarici je informativan i približan, a točan iznos znat će se nakon vaganja pri primitku paketa.</p>', unsafe_allow_html=True)
 st.caption("© 2026. Mesnica Kojundžić Sisak")
