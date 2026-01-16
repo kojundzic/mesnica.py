@@ -56,7 +56,7 @@ LANG_MAP = {
         "haccp_title": "HACCP-Standards und Sicherheit",
         "haccp_text": "Unsere Produktion findet unter strengsten sanitären Bedingungen statt:\n1. **Rückverfolgbarkeit:** Klar ersichtliche Herkunft jedes Stücks.\n2. **Sicherheit:** Das HACCP-System überwacht jeden Schritt.\n3. **Hygiene:** Tradition kombiniert mit modernsten Standards.",
         "info_title": "Familientradition und Qualität",
-        "info_text": "Im Herzen von Sisak gelegen, sind wir stolz auf unsere Erfahrung. Unser Vieh wird ausschließlich von kleinen Bauernhöfen rund um Sisak gekauft:\n* **Naturpark Lonjsko Polje**\n* **Region Banovina**\n* **Region Posavina**"
+        "info_text": "Im Herzen von Sisak gelegen, sind wir stolz auf unsere experience. Unser Vieh wird ausschließlich von kleinen Bauernhöfen rund um Sisak gekauft:\n* **Naturpark Lonjsko Polje**\n* **Region Banovina**\n* **Region Posavina**"
     }
 }
 
@@ -74,7 +74,7 @@ def posalji_email_vlasniku(ime, telefon, grad, adr, detalji_hr, ukupno, jezik_ko
         return True
     except: return False
 
-# --- 3. DIZAJN (ZAKLJUČANO) ---
+# --- 3. JEZIK I DIZAJN (ZAKLJUČANO) ---
 izabrani_jezik = st.sidebar.selectbox("Jezik / Language", list(LANG_MAP.keys()))
 T = LANG_MAP[izabrani_jezik]
 
@@ -83,7 +83,7 @@ st.markdown(f"""<style>
     .brand-sub {{ color: #333; font-size: 18px; text-align: center; font-weight: 600; margin-bottom: 25px; }}
     .product-card {{ background: white; border-radius: 12px; padding: 15px; border: 1px solid #eee; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: 0.3s; }}
     .product-img {{ border-radius: 8px; width: 100%; height: 180px; object-fit: cover; margin-bottom: 10px; }}
-    .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; width: 100%; }}
+    .stButton>button {{ background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%); color: white !important; font-weight: bold; border-radius: 50px; }}
 </style>""", unsafe_allow_html=True)
 
 # --- 4. PROIZVODI (ZAKLJUČANO) ---
@@ -94,91 +94,86 @@ proizvodi = [
     {"id": 12, "hr_name": "Čvarci", "name": {"HR 🇭🇷": "Čvarci", "EN 🇬🇧": "Pork Cracklings", "DE 🇩🇪": "Grammeln"}, "price": 20.0, "type": "kg", "img": "https://images.unsplash.com"}
 ]
 
-# Inicijalizacija košarice
+# Inicijalizacija košarice u session_state (da se ne briše pri kliku)
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
-# --- 5. NAVIGACIJA (TABS) ---
-tab_shop, tab_horeca, tab_haccp, tab_info = st.tabs([
-    T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]
-])
+# --- 5. NAVIGACIJA ---
+menu = [T["nav_shop"], T["nav_horeca"], T["nav_haccp"], T["nav_info"]]
+choice = st.selectbox("Izbornik", menu, label_visibility="collapsed")
 
-# --- TRGOVINA (RUBRIKA ZA RAD) ---
-with tab_shop:
+# --- RUBRIKA TRGOVINA (S KOŠARICOM) ---
+if choice == T["nav_shop"]:
     st.markdown(f'<p class="brand-name">KOJUNDŽIĆ</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="brand-sub">{T["title_sub"]}</p>', unsafe_allow_html=True)
-    
-    cols = st.columns(2)
-    for i, p in enumerate(proizvodi):
-        with cols[i % 2]:
-            st.markdown(f"""
-            <div class="product-card">
-                <img src="{p['img']}" class="product-img">
-                <h3 style="margin:0;">{p['name'][izabrani_jezik]}</h3>
-                <p style="font-size: 20px; color: #8B0000; font-weight: bold;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            if st.button(f"➕ {p['name'][izabrani_jezik]}", key=f"add_{p['id']}"):
-                st.session_state.cart[p['id']] = st.session_state.cart.get(p['id'], 0) + 1
-                st.rerun()
 
-    # KOŠARICA U SIDEBARU
-    st.sidebar.markdown(f"### {T['cart_title']}")
-    ukupna_cijena = 0.0
-    detalji_hr = ""
+    col_main, col_cart = st.columns([2, 1])
 
-    if not st.session_state.cart:
-        st.sidebar.info(T["cart_empty"])
-    else:
-        for p_id, kolicina in list(st.session_state.cart.items()):
-            p = next(item for item in proizvodi if item["id"] == p_id)
-            subtotal = p["price"] * kolicina
-            ukupna_cijena += subtotal
-            
-            st.sidebar.markdown(f"**{p['name'][izabrani_jezik]}**")
-            col1, col2 = st.sidebar.columns([1,1])
-            nova_kol = col1.number_input(f"{T['unit_'+p['type']]}", min_value=0, value=kolicina, key=f"edit_{p_id}")
-            if nova_kol != kolicina:
-                if nova_kol == 0: del st.session_state.cart[p_id]
-                else: st.session_state.cart[p_id] = nova_kol
-                st.rerun()
-            
-            detalji_hr += f"- {p['hr_name']}: {kolicina} {p['type']}\n"
+    with col_main:
+        inner_cols = st.columns(2)
+        for i, p in enumerate(proizvodi):
+            with inner_cols[i % 2]:
+                st.markdown(f"""
+                <div class="product-card">
+                    <img src="{p['img']}" class="product-img">
+                    <h3>{p['name'][izabrani_jezik]}</h3>
+                    <p style="font-size: 20px; color: #8B0000; font-weight: bold;">{p['price']:.2f} € / {T['unit_'+p['type']]}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button(f"➕ {p['name'][izabrani_jezik]}", key=f"add_{p['id']}"):
+                    st.session_state.cart[p['id']] = st.session_state.cart.get(p['id'], 0) + 1
+                    st.rerun()
 
-        st.sidebar.markdown("---")
-        st.sidebar.markdown(f"{T['note_vaga']}", unsafe_allow_html=True)
-        st.sidebar.subheader(f"{T['total']}: {ukupna_cijena:.2f} €")
-
-        with st.sidebar.expander(T["btn_order"]):
-            with st.form("order_form"):
-                ime = st.text_input(T["form_name"])
-                tel = st.text_input(T["form_tel"])
-                grad = st.text_input(T["form_city"])
-                adr = st.text_input(T["form_addr"])
-                potvrdi = st.form_submit_button(T["btn_order"])
+    with col_cart:
+        st.markdown(f"### {T['cart_title']}")
+        suma = 0.0
+        lista_za_email = ""
+        
+        if not st.session_state.cart:
+            st.info(T["cart_empty"])
+        else:
+            for pid, qty in list(st.session_state.cart.items()):
+                p = next(x for x in proizvodi if x["id"] == pid)
+                suma += p["price"] * qty
+                lista_za_email += f"- {p['hr_name']}: {qty} {p['type']}\n"
                 
-                if potvrdi:
-                    if ime and tel and grad and adr:
-                        if posalji_email_vlasniku(ime, tel, grad, adr, detalji_hr, ukupna_cijena, izabrani_jezik):
-                            st.success(T["success"])
-                            st.session_state.cart = {}
-                            st.balloons()
+                c1, c2 = st.columns([3, 1])
+                c1.write(f"**{p['name'][izabrani_jezik]}** ({qty})")
+                if c2.button("❌", key=f"rem_{pid}"):
+                    del st.session_state.cart[pid]
+                    st.rerun()
+            
+            st.write("---")
+            st.markdown(T["note_vaga"], unsafe_allow_html=True)
+            st.subheader(f"{T['total']}: {suma:.2f} €")
+            
+            with st.expander(T["btn_order"]):
+                with st.form("narudzba"):
+                    f_ime = st.text_input(T["form_name"])
+                    f_tel = st.text_input(T["form_tel"])
+                    f_grad = st.text_input(T["form_city"])
+                    f_adr = st.text_input(T["form_addr"])
+                    poslano = st.form_submit_button(T["btn_order"])
+                    
+                    if poslano:
+                        if f_ime and f_tel and f_grad and f_adr:
+                            if posalji_email_vlasniku(f_ime, f_tel, f_grad, f_adr, lista_za_email, suma, izabrani_jezik):
+                                st.success(T["success"])
+                                st.session_state.cart = {}
+                            else:
+                                st.error("Greška kod slanja maila.")
                         else:
-                            st.error("Greška pri slanju.")
-                    else:
-                        st.warning("Popunite sva polja.")
+                            st.warning("Popunite sva polja.")
 
-# --- 6. OSTALI TABOVI (ZAKLJUČANO) ---
-with tab_horeca:
+# --- OSTALE RUBRIKE (ZAKLJUČANO) ---
+elif choice == T["nav_horeca"]:
     st.header(T["horeca_title"])
     st.markdown(T["horeca_text"])
 
-with tab_haccp:
+elif choice == T["nav_haccp"]:
     st.header(T["haccp_title"])
-    st.info(T["haccp_text"])
+    st.markdown(T["haccp_text"])
 
-with tab_info:
+elif choice == T["nav_info"]:
     st.header(T["info_title"])
-    st.write(T["info_text"])
-    st.map(data={'lat': [45.485], 'lon': [16.373]})
+    st.markdown(T["info_text"])
